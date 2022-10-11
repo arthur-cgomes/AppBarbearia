@@ -1,7 +1,10 @@
-import { Controller, Post, Body, Put, Param, Get } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiConflictResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Post, Body, Put, Param, Get, Delete, Query } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { DeleteResponseDto } from 'src/common/dto/delete-response.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { GetAllUsersResponseDto } from './dto/get-all-user-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
 @ApiTags('User')
@@ -15,7 +18,7 @@ export class UserController {
     @ApiOperation({
         summary: 'Cria um novo usuário',
     })
-    //@ApiCreatedResponse({ type: UserDto })
+    @ApiCreatedResponse({ type: UserDto })
     @ApiConflictResponse({
         description: 'Usuário já cadastrado',
     })
@@ -29,7 +32,7 @@ export class UserController {
     @ApiOperation({
         summary: 'Atualiza um usuário',
     })
-    //@ApiOkResponse({ type: UserDto })
+    @ApiOkResponse({ type: UserDto })
     @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
     @ApiBadRequestResponse({
         description: 'Dados inválidos',
@@ -45,7 +48,7 @@ export class UserController {
     @ApiOperation({
         summary: 'Retorna um usuário pelo id',
     })
-    //@ApiOkResponse({ type: UserDto })
+    @ApiOkResponse({ type: UserDto })
     @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
     async getUserById(
         @Param('userId') userId: string
@@ -53,4 +56,31 @@ export class UserController {
         return await this.userService.getUserById(userId);
     }
 
+    @Get()
+    @ApiOperation({
+        summary: 'Retorna todos usuários',
+    })
+    @ApiQuery({ name: 'take', required: false })
+    @ApiQuery({ name: 'skip', required: false })
+    @ApiQuery({ name: 'userId', required: false })
+    @ApiOkResponse({ type: GetAllUsersResponseDto })
+    async getAllUsers(
+        @Query('take') take = 10,
+        @Query('skip') skip = 0,
+        @Query('userId') userId?: string,
+    ) {
+        return await this.userService.getAllUsers(take, skip, userId);
+    }
+
+    @Delete(':userId')
+    @ApiOperation({
+        summary: 'Exclui um usuário',
+    })
+    @ApiOkResponse({ type: DeleteResponseDto })
+    @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
+    async deleteUserById(
+        @Param('userId') userId: string,
+    ) {
+        return { message: await this.userService.deleteUser(userId) };
+    }
 }
