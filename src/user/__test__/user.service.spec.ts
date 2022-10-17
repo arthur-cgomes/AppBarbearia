@@ -50,19 +50,12 @@ describe('UserService', () => {
       repositoryMock.findOne = jest.fn();
       repositoryMock.create = jest.fn().mockReturnValue({ save: () => user });
 
-      const result = await service.createUser(
-        createUserDto,
-      );
+      const result = await service.createUser(createUserDto);
 
       expect(result).toStrictEqual(user);
       expect(repositoryMock.create).toHaveBeenCalledWith({
         ...createUserDto,
       });
     });
-
-
-
-
-
-  })
+  });
 });
