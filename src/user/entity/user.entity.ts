@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import { BaseCollection } from 'src/common/entity/base.entity';
+import { BaseCollection } from '../../common/entity/base.entity';
 import { BeforeInsert, BeforeUpdate, Column, Entity, Unique } from 'typeorm';
 
 @Entity()
