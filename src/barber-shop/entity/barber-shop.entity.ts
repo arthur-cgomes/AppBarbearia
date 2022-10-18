@@ -11,11 +11,11 @@ export class BarberShop extends BaseCollection {
     //verificar se o endereço se sequadra como texto
 
     @ApiProperty()
-    @Column({ type: 'text', default: null })
+    @Column({ type: 'text', default: null }) // verificar se deixa obrigatorio no dto
     address: string;
 
     @ApiProperty()
-    @Column({ type: 'number', default: null })
-    phone: number;
+    @Column({ length: 20, default: null })  // verificar se deixa obrigatorio no dto
+    phone: string;
     
 }
