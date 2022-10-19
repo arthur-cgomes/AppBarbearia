@@ -8,5 +8,6 @@ import { BarberShop } from './entity/barber-shop.entity';
   imports: [TypeOrmModule.forFeature([BarberShop])],
   controllers: [BarberShopController],
   providers: [BarberShopService],
+  exports: [BarberShopService],
 })
 export class BarberShopModule {}
