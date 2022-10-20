@@ -6,6 +6,7 @@ import { BarberShopService } from "../barber-shop.service"
 import { BarberShop } from "../entity/barber-shop.entity";
 import { CreateBarberShopDto } from "../dto/create-barbershop.dto"
 import { ConflictException } from "@nestjs/common";
+import { UpdateBarberShopDto } from "../dto/update-barbershop.dto";
 
 describe('BarberShopService', () => {
     let service: BarberShopService;
@@ -42,7 +43,7 @@ describe('BarberShopService', () => {
         it('Should successfully create a barbershop', async () => {
             repositoryMock.findOne = jest.fn();
             repositoryMock.create = jest.fn().mockReturnValue({ save: () => barbershop });
-
+            console.log();
             const result = await service.createBarberShop(createBarbershopDto);
 
             expect(result).toStrictEqual(barbershop);
@@ -64,5 +65,22 @@ describe('BarberShopService', () => {
         });
     });
 
-    
+
+    describe('updateBarberShop', () => {
+        const updateBarberShopDto: UpdateBarberShopDto = {
+            name: 'TestingUpdate',
+        };
+
+        it('Should successfully update a barbershop', async () => {
+            repositoryMock.findOne = jest.fn().mockReturnValue(barbershop);
+            repositoryMock.preload = jest.fn().mockReturnValue({ save: () => barbershop});
+
+            const result = await service.updateBarberShop(
+                barbershop.id,
+                updateBarberShopDto,
+            );
+            
+
+        })
+    })
 })
