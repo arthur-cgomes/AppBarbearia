@@ -8,11 +8,12 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   Unique,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserType } from '../../user-type/entity/user-type.entity';
-
+import { Notification } from '../../notification/entity/notification.entity';
 
 @Entity()
 @Unique(['email'])
@@ -43,6 +44,10 @@ export class User extends BaseCollection {
   @ManyToMany(() => UserType, (usertype) => usertype.user)
   @JoinTable({ name: 'user_user_type' })
   userTypes: UserType[];
+
+  @ApiProperty({ type: () => Notification })
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
 
   checkPassword = (attempt: string) => {
     if (!this.password) return false;

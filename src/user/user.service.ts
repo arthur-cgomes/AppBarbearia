@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Repository } from 'typeorm';
+import { FindManyOptions, In, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetAllUsersResponseDto } from './dto/get-all-user-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -74,6 +74,10 @@ export class UserService {
     }
 
     return user;
+  }
+
+  public async getUserByIds(ids: string[]): Promise<User[]> {
+    return await this.userRepository.findBy({ id: In(ids) });
   }
 
   public async getAllUsers(
