@@ -8,10 +8,7 @@ import {
 import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '../entity/user.entity';
 import { UserService } from '../user.service';
-import {
-  ConflictException,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UpdateUserDto } from '../dto/update-user.dto';
 
 describe('UserService', () => {
@@ -66,15 +63,13 @@ describe('UserService', () => {
     });
 
     it('Should throw the ConflictException exception when user already exists', async () => {
-      const error = new ConflictException(
-        'user already exists',
-      );
+      const error = new ConflictException('user already exists');
 
       repositoryMock.findOne = jest.fn().mockReturnValue(user);
 
-      await expect(
-        service.createUser(createUserDto),
-      ).rejects.toStrictEqual(error);
+      await expect(service.createUser(createUserDto)).rejects.toStrictEqual(
+        error,
+      );
       expect(repositoryMock.create).not.toHaveBeenCalled();
     });
   });
@@ -90,10 +85,7 @@ describe('UserService', () => {
       repositoryMock.findOne = jest.fn().mockReturnValue(user);
       repositoryMock.preload = jest.fn().mockReturnValue({ save: () => user });
 
-      const result = await service.updateUser(
-        user.id,
-        updateUserDto,
-      );
+      const result = await service.updateUser(user.id, updateUserDto);
 
       expect(result).toStrictEqual(user);
       expect(repositoryMock.preload).toHaveBeenCalledWith({
@@ -103,9 +95,7 @@ describe('UserService', () => {
     });
 
     it('Should throw the NotFoundException exception when user not found', async () => {
-      const error = new NotFoundException(
-        'user not found',
-      );
+      const error = new NotFoundException('user not found');
 
       repositoryMock.findOne = jest.fn();
 
