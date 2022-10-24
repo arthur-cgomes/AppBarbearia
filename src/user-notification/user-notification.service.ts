@@ -38,7 +38,7 @@ export class UserNotificationService {
             relations: ['user'],
         });
 
-        if (!usernotification || usernotification.user.id !== id)
+        if (!usernotification)
             throw new BadRequestException('user notification not found');
 
         return await (
