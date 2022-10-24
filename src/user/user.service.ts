@@ -1,5 +1,7 @@
 import {
   ConflictException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -15,6 +17,20 @@ export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
+
+  async checkUserToLogin(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'password'],
+    });
+    if (!user)
+      throw new HttpException(
+        'user with this email not found',
+        HttpStatus.NOT_FOUND,
+      );
+
+    return user;
+  }
 
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
     const checkUser = await this.userRepository.findOne({
