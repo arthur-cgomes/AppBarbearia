@@ -1,8 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { BaseCollection } from '../../common/entity/base.entity';
-import { BeforeInsert, BeforeUpdate, Column, Entity, Unique } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  Unique,
+} from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { UserType } from '../../user-type/entity/user-type.entity';
+
 
 @Entity()
 @Unique(['email'])
@@ -28,6 +38,11 @@ export class User extends BaseCollection {
   @ApiProperty()
   @Column({ length: 20, default: null })
   phone: string;
+
+  @ApiProperty({ type: () => UserType })
+  @ManyToMany(() => UserType, (usertype) => usertype.user)
+  @JoinTable({ name: 'user_user_type' })
+  userTypes: UserType[];
 
   checkPassword = (attempt: string) => {
     if (!this.password) return false;
