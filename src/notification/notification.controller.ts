@@ -29,7 +29,7 @@ import { NotificationService } from './notification.service';
 @ApiTags('Notification')
 @Controller('notifications')
 export class NotificationController {
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService) { }
 
   @Post()
   @ApiOperation({
@@ -71,7 +71,9 @@ export class NotificationController {
   })
   @ApiOkResponse({ type: NotificationDto })
   @ApiNotFoundResponse({ description: 'Notificação não encontrada' })
-  async getNotificationById(@Param('id') id: string) {
+  async getNotificationById(
+    @Param('id') id: string
+  ) {
     return await this.notificationService.getNotificationById(id);
   }
 
@@ -104,7 +106,9 @@ export class NotificationController {
   })
   @ApiOkResponse({ type: DeleteResponseDto })
   @ApiNotFoundResponse({ description: 'Notificação não encontrada' })
-  async deleteNotificationById(@Param('id') id: string) {
+  async deleteNotificationById(
+    @Param('id') id: string
+  ) {
     return { message: await this.notificationService.deleteNotification(id) };
   }
 }

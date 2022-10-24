@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
+import { UserNotificationService } from '../user-notification/user-notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { GetAllNotificationsResponseDto } from './dto/get-all-notification-response.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
@@ -15,6 +16,7 @@ import { Notification } from './entity/notification.entity';
 export class NotificationService {
   constructor(
     private readonly userService: UserService,
+    private readonly userNotificationService: UserNotificationService,
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
   ) {}
@@ -38,18 +40,18 @@ export class NotificationService {
       })
       .save();
 
-    //try {
-    //  await this.userNotificationService.createUserNotifications(
-    //    notification,
-    //    toUsers,
-    //  );
-    //  return notification;
-    //} catch (err) {
-    //  if (notification.id)
-    //    await this.notificationRepository.remove(notification);
-    //
-    //  throw err;
-    //}
+    try {
+      await this.userNotificationService.createUserNotifications(
+        notification,
+        toUsers,
+      );
+      return notification;
+    } catch (err) {
+      if (notification.id)
+        await this.notificationRepository.remove(notification);
+
+      throw err;
+    }
   }
 
   public async updateNotification(

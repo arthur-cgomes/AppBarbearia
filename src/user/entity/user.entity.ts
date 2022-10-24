@@ -14,6 +14,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { UserType } from '../../user-type/entity/user-type.entity';
 import { Notification } from '../../notification/entity/notification.entity';
+import { UserNotification } from '../../user-notification/entity/user-notification.entity';
 
 @Entity()
 @Unique(['email'])
@@ -48,6 +49,13 @@ export class User extends BaseCollection {
   @ApiProperty({ type: () => Notification })
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Notification[];
+
+  @ApiProperty({ type: () => UserNotification })
+  @OneToMany(
+    () => UserNotification,
+    (usernotification) => usernotification.user,
+  )
+  usernotifications: UserNotification[];
 
   checkPassword = (attempt: string) => {
     if (!this.password) return false;
