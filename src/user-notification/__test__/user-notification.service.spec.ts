@@ -111,13 +111,10 @@ describe('UserNotificationService', () => {
       repositoryMock.findOne = jest.fn();
 
       await expect(
-        service.updateUserNotificationRead(
-          userNotification.id,
-        ),
+        service.updateUserNotificationRead(userNotification.id),
       ).rejects.toStrictEqual(error);
       expect(repositoryMock.preload).not.toHaveBeenCalled();
     });
-
   });
   describe('getUserNotificationById', () => {
     it('Should successfully get a userNotification by id', async () => {

@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '../user/user.module';
 import { UserNotificationModule } from '../user-notification/user-notification.module';
 
-
 @Module({
   imports: [
     TypeOrmModule.forFeature([Notification]),

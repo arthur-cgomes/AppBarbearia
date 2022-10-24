@@ -6,18 +6,18 @@ import { User } from '../../user/entity/user.entity';
 
 @Entity()
 export class UserNotification extends BaseCollection {
-    @ApiProperty()
-    @Column({ type: 'bool', name: 'read', default: false })
-    read: boolean;
+  @ApiProperty()
+  @Column({ type: 'bool', name: 'read', default: false })
+  read: boolean;
 
-    @ApiProperty({ type: () => User })
-    @ManyToOne(() => User, (user) => user.usernotifications)
-    user: User;
+  @ApiProperty({ type: () => User })
+  @ManyToOne(() => User, (user) => user.usernotifications)
+  user: User;
 
-    @ApiProperty({ type: () => Notification })
-    @ManyToOne(
-        () => Notification,
-        (notification) => notification.usernotifications,
-    )
-    notification: Notification;
+  @ApiProperty({ type: () => Notification })
+  @ManyToOne(
+    () => Notification,
+    (notification) => notification.usernotifications,
+  )
+  notification: Notification;
 }

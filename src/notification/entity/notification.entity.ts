@@ -5,7 +5,6 @@ import { BaseCollection } from '../../common/entity/base.entity';
 import { User } from '../../user/entity/user.entity';
 import { UserNotification } from '../../user-notification/entity/user-notification.entity';
 
-
 @Entity()
 export class Notification extends BaseCollection {
   @ApiProperty()
