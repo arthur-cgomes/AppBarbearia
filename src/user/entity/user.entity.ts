@@ -11,7 +11,8 @@ import {
   Unique,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { UserType } from 'src/user-type/entity/user-type.entity';
+import { UserType } from '../../user-type/entity/user-type.entity';
+
 
 @Entity()
 @Unique(['email'])
