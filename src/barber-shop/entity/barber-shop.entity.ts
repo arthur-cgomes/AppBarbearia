@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { BaseCollection } from "src/common/entity/base.entity";
 import { Column, Entity } from "typeorm";
+import { BaseCollection } from "../../common/entity/base.entity";
 
 @Entity()
 export class BarberShop extends BaseCollection {

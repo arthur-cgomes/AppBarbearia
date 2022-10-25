@@ -48,7 +48,7 @@ export class BarberShopService {
     });
 
     if (!barbershop)
-      throw new NotFoundException('barbershop with id not found');
+      throw new NotFoundException('barbershop with this id not found');
 
     return barbershop;
   }
