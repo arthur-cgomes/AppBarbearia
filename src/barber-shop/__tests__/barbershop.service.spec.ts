@@ -104,4 +104,24 @@ describe('BarberShopService', () => {
       expect(repositoryMock.preload).not.toHaveBeenCalled();
     });
   });
+
+  describe('getBarberShopById', () => {
+    it('Should successfully get a barbershop by id', async () => {
+      repositoryMock.findOne = jest.fn().mockReturnValue(barbershop);
+
+      const result = await service.getBarberShopById(barbershop.id);
+
+      expect(result).toStrictEqual(barbershop);
+    });
+
+    it('Should throw a NotFoundException if barbershop does not exist', async () => {
+      const error = new NotFoundException('barbershop with this id not found');
+
+      repositoryMock.findOne = jest.fn();
+
+      await expect(service.getBarberShopById(barbershop.id)).rejects.toStrictEqual(
+        error,
+      );
+    });
+  });
 });
