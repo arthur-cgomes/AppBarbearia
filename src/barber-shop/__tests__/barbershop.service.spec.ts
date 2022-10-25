@@ -124,4 +124,14 @@ describe('BarberShopService', () => {
       );
     });
   });
+
+  describe('getBarberShopByIds', () => {
+    it('Should successfully get barbershop by ids', async () => {
+      repositoryMock.findBy = jest.fn().mockReturnValue([barbershop]);
+
+      const result = await service.getBarberShopByIds([barbershop.id]);
+
+      expect(result).toStrictEqual([barbershop]);
+    });
+  });
 });
