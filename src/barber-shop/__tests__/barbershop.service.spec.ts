@@ -195,4 +195,25 @@ describe('BarberShopService', () => {
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
     });
   });
+
+  describe('deleteBarberShop', () => {
+    it('Should successfully delete a barbershop', async () => {
+      repositoryMock.findOne = jest.fn().mockReturnValue(barbershop);
+      repositoryMock.remove = jest.fn();
+
+      const result = await service.deleteBarberShop(barbershop.id);
+
+      expect(result).toStrictEqual('removed');
+    });
+
+    it('Should throw a NotFoundException if barbershop does not exist', async () => {
+      const error = new NotFoundException('barbershop with this id not found');
+
+      repositoryMock.findOne = jest.fn();
+
+      await expect(service.deleteBarberShop(barbershop.id)).rejects.toStrictEqual(
+        error,
+      );
+    });
+  });
 });

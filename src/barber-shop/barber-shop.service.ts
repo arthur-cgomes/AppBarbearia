@@ -88,11 +88,11 @@ export class BarberShopService {
     return { skip, total: count, barbershops };
   }
 
-  public async deleteBarberShop(id: string): Promise<BarberShop> {
+  public async deleteBarberShop(id: string): Promise<string> {
     const barbershop = await this.getBarberShopById(id);
 
     await this.barbershopRepository.remove(barbershop);
 
-    return barbershop;                  //mandei retornar o barbershop escluido, verificar se deve retornar uma mesagem 
+    return 'removed';              
   }
 }
