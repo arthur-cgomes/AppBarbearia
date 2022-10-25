@@ -4,7 +4,7 @@ import {
   MockRepository,
   repositoryMockFactory,
 } from '../../utils/mock/test.util';
-import { Repository } from 'typeorm';
+import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { BarberShopService } from '../barber-shop.service';
 import { CreateBarberShopDto } from '../dto/create-barbershop.dto';
 import { ConflictException, NotFoundException } from '@nestjs/common';
@@ -132,6 +132,67 @@ describe('BarberShopService', () => {
       const result = await service.getBarberShopByIds([barbershop.id]);
 
       expect(result).toStrictEqual([barbershop]);
+    });
+  });
+
+  describe('getAllBarbaerShops', () => {
+    it('Should successfully get all barbershops', async () => {
+      const take = 1;
+      const skip = 0;
+      const conditions: FindManyOptions<BarberShop> = {
+        take,
+        skip,
+      };
+
+      repositoryMock.findAndCount = jest.fn().mockReturnValue([[barbershop], 10]);
+
+      const result = await service.getAllBarberShop(take, skip, null);
+
+      expect(result).toStrictEqual({
+        skip: 1,
+        total: 10,
+        barbershops: [barbershop],
+      });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
+
+    it('Should successfully get all barbershop with search', async () => {
+      const search = 'Test';
+      const take = 10;
+      const skip = 0;
+
+      const conditions: FindManyOptions<BarberShop> = {
+        take,
+        skip,
+        where: { name: ILike('%' + search + '%') },
+      };
+
+      repositoryMock.findAndCount = jest.fn().mockReturnValue([[barbershop], 10]);
+
+      const result = await service.getAllBarberShop(take, skip, search);
+
+      expect(result).toStrictEqual({
+        skip: null,
+        total: 10,
+        barbershops: [barbershop],
+      });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
+
+    it('Should successfully return an empty list of barbershops', async () => {
+      const take = 10;
+      const skip = 10;
+      const conditions: FindManyOptions<BarberShop> = {
+        take,
+        skip,
+      };
+
+      repositoryMock.findAndCount = jest.fn().mockReturnValue([[], 0]);
+
+      const result = await service.getAllBarberShop(take, skip, null);
+
+      expect(result).toStrictEqual({ skip: null, total: 0, barbershops: [] });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
     });
   });
 });
