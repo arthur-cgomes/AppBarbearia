@@ -48,7 +48,6 @@ describe('BarberShopService', () => {
       repositoryMock.create = jest
         .fn()
         .mockReturnValue({ save: () => barbershop });
-      console.log();
       const result = await service.createBarberShop(createBarbershopDto);
 
       expect(result).toStrictEqual(barbershop);
