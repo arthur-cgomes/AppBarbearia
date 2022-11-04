@@ -119,9 +119,9 @@ describe('BarberShopService', () => {
 
       repositoryMock.findOne = jest.fn();
 
-      await expect(service.getBarberShopById(barbershop.id)).rejects.toStrictEqual(
-        error,
-      );
+      await expect(
+        service.getBarberShopById(barbershop.id),
+      ).rejects.toStrictEqual(error);
     });
   });
 
@@ -144,7 +144,9 @@ describe('BarberShopService', () => {
         skip,
       };
 
-      repositoryMock.findAndCount = jest.fn().mockReturnValue([[barbershop], 10]);
+      repositoryMock.findAndCount = jest
+        .fn()
+        .mockReturnValue([[barbershop], 10]);
 
       const result = await service.getAllBarberShop(take, skip, null);
 
@@ -167,7 +169,9 @@ describe('BarberShopService', () => {
         where: { name: ILike('%' + search + '%') },
       };
 
-      repositoryMock.findAndCount = jest.fn().mockReturnValue([[barbershop], 10]);
+      repositoryMock.findAndCount = jest
+        .fn()
+        .mockReturnValue([[barbershop], 10]);
 
       const result = await service.getAllBarberShop(take, skip, search);
 
@@ -211,9 +215,9 @@ describe('BarberShopService', () => {
 
       repositoryMock.findOne = jest.fn();
 
-      await expect(service.deleteBarberShop(barbershop.id)).rejects.toStrictEqual(
-        error,
-      );
+      await expect(
+        service.deleteBarberShop(barbershop.id),
+      ).rejects.toStrictEqual(error);
     });
   });
 });

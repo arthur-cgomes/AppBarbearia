@@ -93,6 +93,6 @@ export class BarberShopService {
 
     await this.barbershopRepository.remove(barbershop);
 
-    return 'removed';              
+    return 'removed';
   }
 }
