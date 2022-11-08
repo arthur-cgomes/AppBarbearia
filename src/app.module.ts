@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserTypeModule } from './user-type/user-type.module';
 import { NotificationModule } from './notification/notification.module';
 import { UserNotificationModule } from './user-notification/user-notification.module';
+import { ServicesModule } from './services/services.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UserNotificationModule } from './user-notification/user-notification.mo
     NotificationModule,
     UserNotificationModule,
     BarberShopModule,
+    ServicesModule,
   ],
 })
 export class AppModule {}
