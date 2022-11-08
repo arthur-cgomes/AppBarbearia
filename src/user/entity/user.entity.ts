@@ -64,6 +64,18 @@ export class User extends BaseCollection {
 
   @BeforeInsert()
   @BeforeUpdate()
+  hashPassword() {
+    if (
+      this.password &&
+      this.password !== undefined &&
+      this.password !== null
+    ) {
+      this.password = bcrypt.hashSync(this.password, 10);
+    }
+  }
+
+  @BeforeInsert()
+  @BeforeUpdate()
   format = () => {
     if (this.phone) this.phone = this.phone.replace(/[^\d]+/g, '');
   };
