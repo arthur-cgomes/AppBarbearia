@@ -15,6 +15,7 @@ import * as bcrypt from 'bcrypt';
 import { UserType } from '../../user-type/entity/user-type.entity';
 import { Notification } from '../../notification/entity/notification.entity';
 import { UserNotification } from '../../user-notification/entity/user-notification.entity';
+import { Services } from 'src/services/entity/services.entity';
 
 @Entity()
 @Unique(['email'])
@@ -57,10 +58,9 @@ export class User extends BaseCollection {
   )
   usernotifications: UserNotification[];
 
-  checkPassword = (attempt: string) => {
-    if (!this.password) return false;
-    return bcrypt.compareSync(attempt, this.password);
-  };
+  @ApiProperty({ type: () => Services })
+  @ManyToMany(() => Services, (services) => services.user)
+  services: Services[];
 
   @BeforeInsert()
   @BeforeUpdate()
@@ -72,7 +72,12 @@ export class User extends BaseCollection {
     ) {
       this.password = bcrypt.hashSync(this.password, 10);
     }
-  }
+  }  
+
+  checkPassword = (attempt: string) => {
+    if (!this.password) return false;
+    return bcrypt.compareSync(attempt, this.password);
+  };
 
   @BeforeInsert()
   @BeforeUpdate()
