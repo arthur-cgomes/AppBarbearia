@@ -72,7 +72,7 @@ export class User extends BaseCollection {
     ) {
       this.password = bcrypt.hashSync(this.password, 10);
     }
-  }  
+  }
 
   checkPassword = (attempt: string) => {
     if (!this.password) return false;
