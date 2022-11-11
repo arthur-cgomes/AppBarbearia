@@ -2,7 +2,7 @@ import { BaseCollection } from '../../common/entity/base.entity';
 import { Column, Entity, ManyToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { User } from 'src/user/entity/user.entity';
+import { User } from '../../user/entity/user.entity';
 
 @Entity()
 export class Services extends BaseCollection {

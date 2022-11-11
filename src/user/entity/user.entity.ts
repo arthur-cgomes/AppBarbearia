@@ -15,7 +15,7 @@ import * as bcrypt from 'bcrypt';
 import { UserType } from '../../user-type/entity/user-type.entity';
 import { Notification } from '../../notification/entity/notification.entity';
 import { UserNotification } from '../../user-notification/entity/user-notification.entity';
-import { Services } from 'src/services/entity/services.entity';
+import { Services } from '../../services/entity/services.entity';
 
 @Entity()
 @Unique(['email'])

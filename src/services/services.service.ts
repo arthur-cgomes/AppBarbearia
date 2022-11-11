@@ -25,7 +25,7 @@ export class ServicesService {
     });
 
     if (chekService) {
-      throw new ConflictException('this service already exists');
+      throw new ConflictException('services with that name already exists');
     }
 
     return await this.servicesRepository.create({ ...createServiceDto }).save();
