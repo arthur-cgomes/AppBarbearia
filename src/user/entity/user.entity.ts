@@ -60,6 +60,7 @@ export class User extends BaseCollection {
 
   @ApiProperty({ type: () => Services })
   @ManyToMany(() => Services, (services) => services.user)
+  @JoinTable({ name: 'user_services' })
   services: Services[];
 
   @BeforeInsert()

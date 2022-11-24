@@ -86,10 +86,11 @@ export class ServicesService {
 
   public async deleteService(serviceId: string): Promise<string> {
     const deleteService = await this.servicesRepository.findOne({
-      where: { id: serviceId },
+      where: [{ id: serviceId }],
     });
 
-    if (!deleteService) throw new NotFoundException('service with this id not found');
+    if (!deleteService)
+      throw new NotFoundException('service with this id not found');
 
     await this.servicesRepository.remove(deleteService);
 
