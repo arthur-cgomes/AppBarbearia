@@ -109,6 +109,7 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: [{ id: userId }],
     });
+
     if (!user) throw new NotFoundException('user with this id not found');
 
     await this.userRepository.remove(user);
