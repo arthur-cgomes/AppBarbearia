@@ -16,6 +16,7 @@ import { UserType } from '../../user-type/entity/user-type.entity';
 import { Notification } from '../../notification/entity/notification.entity';
 import { UserNotification } from '../../user-notification/entity/user-notification.entity';
 import { Services } from '../../services/entity/services.entity';
+import { BarberShop } from 'src/barber-shop/entity/barber-shop.entity';
 
 @Entity()
 @Unique(['email'])
@@ -57,6 +58,10 @@ export class User extends BaseCollection {
     (usernotification) => usernotification.user,
   )
   usernotifications: UserNotification[];
+
+  @ApiProperty({ type: () => BarberShop })
+  @OneToMany(() => BarberShop, (barbershop) => barbershop.user)
+  barbershops: BarberShop[];
 
   @ApiProperty({ type: () => Services })
   @ManyToMany(() => Services, (services) => services.user)

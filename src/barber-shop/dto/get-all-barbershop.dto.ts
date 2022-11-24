@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BarberShop } from '../entity/barber-shop.entity';
 
 export class GetAllBarberShopResponseDto {
   @ApiProperty()
@@ -7,5 +8,6 @@ export class GetAllBarberShopResponseDto {
   @ApiProperty()
   skip: number;
 
-  //quando fizer o relacionamento, adicionar o retorno do relacionamento (em array [] )
+  @ApiProperty({ type: BarberShop, isArray: true })
+  barbershop: BarberShop[];
 }
