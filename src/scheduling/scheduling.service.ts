@@ -5,7 +5,7 @@ import { ServicesService } from '../services/services.service';
 import { UserService } from '../user/user.service';
 import { Repository } from 'typeorm';
 import { Scheduling } from './entity/scheduling.entity';
-import { AddSchedulingDto } from './dto/add-scheduling.dto';
+import { CreateSchedulingDto } from './dto/create-scheduling.dto';
 
 
 @Injectable()
@@ -19,25 +19,25 @@ export class SchedulingService {
     ) { }
 
     public async createScheduling(
-        addSchedulingDto: AddSchedulingDto,
+        createSchedulingDto: CreateSchedulingDto,
     ): Promise<Scheduling> {
 
         const user = await this.userService.getUserById(
-            addSchedulingDto.userId,
+            createSchedulingDto.userId,
         );
         if (!user) {
             throw new NotFoundException('user not found');
         }
 
         const barbershop = await this.barberShopService.getBarberShopById(
-            addSchedulingDto.barberShopId,
+            createSchedulingDto.barberShopId,
         );
         if (!barbershop) {
             throw new NotFoundException('barberShop not found');
         }
 
         const service = await this.servicesService.getServiceById(
-            addSchedulingDto.serviceId,
+            createSchedulingDto.serviceId,
         );
         if (!service) {
             throw new NotFoundException('service not found');
@@ -50,6 +50,26 @@ export class SchedulingService {
 
         await this.schedulingRepository.create(scheduling).save();
         return await this.schedulingRepository.create(scheduling).save();
+    }
+
+    public async updateScheduling(
+        id: string,
+        updateSchedulingDto: CreateSchedulingDto,
+    ): Promise<Scheduling> {
+        const scheduling = await this.schedulingRepository.findOne({
+            where: { id }
+        });
+
+        if (!scheduling) {
+            throw new NotFoundException('scheduling not found');
+        }
+
+        return await (
+            await this.schedulingRepository.preload({
+                id: scheduling.id,
+                ...updateSchedulingDto,
+            })
+        ).save();
     }
 
     public async deleteScheduling(schedulingId: string): Promise<string> {
