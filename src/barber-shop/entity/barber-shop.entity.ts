@@ -40,8 +40,8 @@ export class BarberShop extends BaseCollection {
 
   @ApiProperty({ type: () => Scheduling })
   @IsNotEmpty()
-  @ManyToOne(() => Scheduling, (scheduling) => scheduling.barbershop)
-  scheduling: Scheduling;
+  @ManyToOne(() => Scheduling, (scheduling) => scheduling.barbershops)
+  schedulings: Scheduling;
 
   @BeforeInsert()
   @BeforeUpdate()

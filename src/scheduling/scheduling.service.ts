@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BarberShopService } from '../barber-shop/barber-shop.service';
 import { ServicesService } from '../services/services.service';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { Repository } from 'typeorm';
 import { Scheduling } from './entity/scheduling.entity';
 import { AddSchedulingDto } from './dto/add-scheduling.dto';
@@ -19,11 +19,12 @@ export class SchedulingService {
     ) { }
 
     public async createScheduling(
-        userId: string,
         addSchedulingDto: AddSchedulingDto,
     ): Promise<Scheduling> {
 
-        const user = await this.userService.getUserById(userId);
+        const user = await this.userService.getUserById(
+            addSchedulingDto.userId,
+        );
         if (!user) {
             throw new NotFoundException('user not found');
         }
@@ -43,12 +44,25 @@ export class SchedulingService {
         }
 
         const scheduling = new Scheduling();
-        scheduling.user = user;
-        scheduling.barbershop = barbershop;
+        scheduling.users = user;
+        scheduling.barbershops = barbershop;
         scheduling.services = service;
-        scheduling.date = addSchedulingDto.date;
 
         await this.schedulingRepository.create(scheduling).save();
         return await this.schedulingRepository.create(scheduling).save();
+    }
+
+    public async deleteScheduling(schedulingId: string): Promise<string> {
+        const deleteScheduling = await this.schedulingRepository.findOne({
+            where: { id: schedulingId },
+        });
+
+        if (!deleteScheduling) {
+            throw new NotFoundException('scheduling not found');
+        }
+
+        await this.schedulingRepository.remove(deleteScheduling);
+
+        return 'removed';
     }
 }

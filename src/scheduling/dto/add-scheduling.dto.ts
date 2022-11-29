@@ -4,13 +4,14 @@ import { IsNotEmpty } from "class-validator";
 export class AddSchedulingDto {
     @ApiProperty()
     @IsNotEmpty()
+    userId: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
     barberShopId: string;
 
     @ApiProperty()
     @IsNotEmpty()
     serviceId: string;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    date: Date;
 }
