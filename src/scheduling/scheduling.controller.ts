@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DeleteResponseDto } from 'src/common/dto/delete-response.dto';
 import { CreateSchedulingDto } from './dto/create-scheduling.dto';
@@ -20,7 +20,7 @@ export class SchedulingController {
     //@ApiConflictResponse({
     //    desctiption: 'Horário já agendado',
     //})
-    public async createScheduling(
+    async createScheduling(
         @Body() createSchedulingDto: CreateSchedulingDto
     ) {
         return await this.schedulingService.createScheduling(createSchedulingDto);
@@ -37,11 +37,25 @@ export class SchedulingController {
     @ApiBadRequestResponse({
         description: 'Dados inválidos',
     })
-    public async updateScheduling(
+    async updateScheduling(
         @Param('schedulingId') schedulingId: string,
         @Body() updateSchedulingDto: CreateSchedulingDto,
     ) {
         return await this.schedulingService.updateScheduling(schedulingId, updateSchedulingDto);
+    }
+
+    @Get(':schedulingId')
+    @ApiOperation({
+        summary: 'Busca um horário pelo id',
+    })
+    //@ApiOkResponse({ type: SchedulingDto })
+    @ApiNotFoundResponse({
+        description: 'Horário não encontrado',
+    })
+    async getSchedulingById(
+        @Param('schedulingId') schedulingId: string,
+    ) {
+        return await this.schedulingService.getSchedulingById(schedulingId);
     }
 
     @Delete(':schedulingId')
@@ -50,7 +64,7 @@ export class SchedulingController {
     })
     @ApiOkResponse({ type: DeleteResponseDto })
     @ApiNotFoundResponse({ description: 'Horário não encontrado' })
-    public async deleteScheduling(
+    async deleteScheduling(
         @Param('schedulingId') schedulingId: string,
     ) {
         return { message: await this.schedulingService.deleteScheduling(schedulingId) };

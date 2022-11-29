@@ -72,6 +72,18 @@ export class SchedulingService {
         ).save();
     }
 
+    public async getSchedulingById(schedulingId: string): Promise<Scheduling> {
+        const scheduling = await this.schedulingRepository.findOne({
+            where: { id: schedulingId },
+        });
+
+        if (!scheduling) {
+            throw new NotFoundException('scheduling not found');
+        }
+
+        return scheduling;
+    }
+
     public async deleteScheduling(schedulingId: string): Promise<string> {
         const deleteScheduling = await this.schedulingRepository.findOne({
             where: { id: schedulingId },
