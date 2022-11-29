@@ -17,6 +17,7 @@ import { Notification } from '../../notification/entity/notification.entity';
 import { UserNotification } from '../../user-notification/entity/user-notification.entity';
 import { Services } from '../../services/entity/services.entity';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
+import { Scheduling } from '../../scheduling/entity/scheduling.entity';
 
 @Entity()
 @Unique(['email'])
@@ -67,6 +68,10 @@ export class User extends BaseCollection {
   @ManyToMany(() => Services, (services) => services.user)
   @JoinTable({ name: 'user_services' })
   services: Services[];
+
+  @ApiProperty({ type: () => Scheduling })
+  @OneToMany(() => Scheduling, (scheduling) => scheduling.user)
+  scheduling: Scheduling[];
 
   @BeforeInsert()
   @BeforeUpdate()

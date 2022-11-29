@@ -1,8 +1,9 @@
 import { BaseCollection } from '../../common/entity/base.entity';
-import { Column, Entity, ManyToMany } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { User } from '../../user/entity/user.entity';
+import { Scheduling } from '../../scheduling/entity/scheduling.entity';
 
 @Entity()
 export class Services extends BaseCollection {
@@ -22,4 +23,8 @@ export class Services extends BaseCollection {
   @ApiProperty()
   @ManyToMany(() => User, (user) => user.services)
   user: User[];
+
+  @ApiProperty()
+  @OneToMany(() => Scheduling, (scheduling) => scheduling.services)
+  scheduling: Scheduling[];
 }
