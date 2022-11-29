@@ -18,7 +18,6 @@ export class BarberShopService {
 
   public async createBarberShop(
     createBarberShopDto: CreateBarberShopDto,
-    userId: string,
   ): Promise<BarberShop> {
     const checkBarberShop = await this.barbershopRepository.findOne({
       where: [{ cnpj: createBarberShopDto.cnpj }],

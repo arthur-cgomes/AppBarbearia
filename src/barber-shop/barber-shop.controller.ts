@@ -32,7 +32,7 @@ import { UpdateBarberShopDto } from './dto/update-barbershop.dto';
 export class BarberShopController {
   constructor(private readonly barbershopService: BarberShopService) {}
 
-  @Post(':userId')
+  @Post()
   @ApiOperation({
     summary: 'Cria uma barbearia',
   })
@@ -40,11 +40,8 @@ export class BarberShopController {
   @ApiConflictResponse({
     description: 'Uma barbearia com esse CNPJ já existe',
   })
-  async CreateBarberShop(
-    @Body() barbershop: CreateBarberShopDto,
-    @Param('userId') userId: string,
-  ) {
-    return await this.barbershopService.createBarberShop(barbershop, userId);
+  async CreateBarberShop(@Body() barbershop: CreateBarberShopDto) {
+    return await this.barbershopService.createBarberShop(barbershop);
   }
 
   @Put(':id')
