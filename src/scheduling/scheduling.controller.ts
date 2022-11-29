@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { DeleteResponseDto } from 'src/common/dto/delete-response.dto';
 import { CreateSchedulingDto } from './dto/create-scheduling.dto';
+import { GetAllSchedulingResponseDto } from './dto/get-all-scheduling-response.dto';
+import { SchedulingDto } from './dto/scheduling.dto';
 import { SchedulingService } from './scheduling.service';
 
 @ApiBearerAuth()
@@ -16,7 +18,7 @@ export class SchedulingController {
     @ApiOperation({
         summary: 'Agenda um horário',
     })
-    //@ApiCreatedResponse({ type: SchedulingDto })
+    @ApiCreatedResponse({ type: SchedulingDto })
     //@ApiConflictResponse({
     //    desctiption: 'Horário já agendado',
     //})
@@ -30,7 +32,7 @@ export class SchedulingController {
     @ApiOperation({
         summary: 'Atualiza um horário',
     })
-    //@ApiOkResponse({ type: SchedulingDto })
+    @ApiOkResponse({ type: SchedulingDto })
     @ApiNotFoundResponse({
         description: 'Horário não encontrado',
     })
@@ -48,7 +50,7 @@ export class SchedulingController {
     @ApiOperation({
         summary: 'Busca um horário pelo id',
     })
-    //@ApiOkResponse({ type: SchedulingDto })
+    @ApiOkResponse({ type: SchedulingDto })
     @ApiNotFoundResponse({
         description: 'Horário não encontrado',
     })
@@ -56,6 +58,29 @@ export class SchedulingController {
         @Param('schedulingId') schedulingId: string,
     ) {
         return await this.schedulingService.getSchedulingById(schedulingId);
+    }
+
+    @Get()
+    @ApiOperation({
+        summary: 'Retorna todos os horários',
+    })
+    @ApiQuery({ name: 'take', required: false })
+    @ApiQuery({ name: 'skip', required: false })
+    @ApiQuery({ name: 'userId', required: false })
+    @ApiQuery({ name: 'schedulingId', required: false })
+    @ApiOkResponse({ type: GetAllSchedulingResponseDto })
+    async getAllUsers(
+        @Query('take') take = 10,
+        @Query('skip') skip = 0,
+        @Query('userId') userId?: string,
+        @Query('schedulingId') schedulingId?: string,
+    ) {
+        return await this.schedulingService.getAllScheduling(
+            take,
+            skip,
+            userId,
+            schedulingId,
+        );
     }
 
     @Delete(':schedulingId')

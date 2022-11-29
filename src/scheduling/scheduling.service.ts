@@ -3,9 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BarberShopService } from '../barber-shop/barber-shop.service';
 import { ServicesService } from '../services/services.service';
 import { UserService } from '../user/user.service';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 import { Scheduling } from './entity/scheduling.entity';
 import { CreateSchedulingDto } from './dto/create-scheduling.dto';
+import { GetAllSchedulingResponseDto } from './dto/get-all-scheduling-response.dto';
 
 
 @Injectable()
@@ -83,6 +84,36 @@ export class SchedulingService {
 
         return scheduling;
     }
+
+    public async getAllScheduling(
+        take: number,
+        skip: number,
+        userId: string,
+        schedulingId?: string,
+      ): Promise<GetAllSchedulingResponseDto> {
+        const conditions: FindManyOptions<Scheduling> = {
+          take,
+          skip,
+        };
+    
+        if (userId) {
+          conditions.where = { id: userId };
+        } else if (schedulingId) {
+          conditions.where = { id: schedulingId };
+        }
+    
+        const [scheduling, count] =
+          await this.schedulingRepository.findAndCount(conditions);
+    
+        if (scheduling.length == 0) {
+          return { skip: null, total: 0, schedulings: [] };
+        }
+        const over = count - Number(take) - Number(skip);
+        skip = over <= 0 ? null : Number(skip) + Number(take);
+    
+        return { skip, total: count, schedulings: scheduling };
+      }
+
 
     public async deleteScheduling(schedulingId: string): Promise<string> {
         const deleteScheduling = await this.schedulingRepository.findOne({
