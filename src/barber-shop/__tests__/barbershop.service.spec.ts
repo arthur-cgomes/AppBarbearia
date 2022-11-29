@@ -41,6 +41,10 @@ describe('BarberShopService', () => {
   describe('createbarbershop', () => {
     const createBarbershopDto: CreateBarberShopDto = {
       name: 'Teste',
+      cnpj: '62780460000137',
+      address: 'adress',
+      phone: 'phone',
+      email: 'email',
     };
 
     it('Should successfully create a barbershop', async () => {
@@ -58,7 +62,7 @@ describe('BarberShopService', () => {
 
     it('Should throw a ConflictException if barbershop already exists', async () => {
       const error = new ConflictException(
-        'barbershop already exists with this name',
+        'barbershop already exists with this CNPJ',
       );
       repositoryMock.findOne = jest.fn().mockReturnValue(barbershop);
 
@@ -72,6 +76,10 @@ describe('BarberShopService', () => {
   describe('updateBarberShop', () => {
     const updateBarberShopDto: UpdateBarberShopDto = {
       name: 'TestingUpdate',
+      cnpj: '62780460000137',
+      address: 'adress',
+      phone: 'phone',
+      email: 'email',
     };
 
     it('Should successfully update a barbershop', async () => {

@@ -20,11 +20,11 @@ export class BarberShopService {
     createBarberShopDto: CreateBarberShopDto,
   ): Promise<BarberShop> {
     const checkBarberShop = await this.barbershopRepository.findOne({
-      where: [{ name: createBarberShopDto.name }], //esta buscando somente o nome, tera mais filtros?
+      where: [{ cnpj: createBarberShopDto.cnpj }],
     });
 
     if (checkBarberShop)
-      throw new ConflictException('barbershop already exists with this name'); //verificar o metodo de erro
+      throw new ConflictException('barbershop already exists with this CNPJ');
 
     return await this.barbershopRepository
       .create({ ...createBarberShopDto })
@@ -60,6 +60,7 @@ export class BarberShopService {
   public async getAllBarberShop(
     take: number,
     skip: number,
+    barbershopId: string,
     search?: string,
   ): Promise<{
     skip: number;
@@ -71,7 +72,9 @@ export class BarberShopService {
       skip,
     };
 
-    if (search) {
+    if (barbershopId) {
+      conditions.where = { id: barbershopId };
+    } else if (search) {
       conditions.where = { name: ILike('%' + search + '%') };
     }
 
@@ -88,10 +91,15 @@ export class BarberShopService {
     return { skip, total: count, barbershops };
   }
 
-  public async deleteBarberShop(id: string): Promise<string> {
-    const barbershop = await this.getBarberShopById(id);
+  public async deleteBarberShop(barbershopId: string): Promise<string> {
+    const deleteBarberShop = await this.barbershopRepository.findOne({
+      where: [{ id: barbershopId }],
+    });
 
-    await this.barbershopRepository.remove(barbershop);
+    if (!deleteBarberShop)
+      throw new NotFoundException('barbershop with this id not found');
+
+    await this.barbershopRepository.remove(deleteBarberShop);
 
     return 'removed';
   }

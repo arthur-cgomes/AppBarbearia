@@ -1,20 +1,47 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity } from 'typeorm';
+import { IsEmail, IsNotEmpty } from 'class-validator';
+import { User } from '../../user/entity/user.entity';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
 import { BaseCollection } from '../../common/entity/base.entity';
 
 @Entity()
 export class BarberShop extends BaseCollection {
   @ApiProperty()
+  @IsNotEmpty()
   @Column({ length: 255 })
   name: string;
 
-  //verificar se o endereço se sequadra como texto
+  @ApiProperty()
+  @IsNotEmpty()
+  @Column({ length: 14 })
+  cnpj: string;
 
   @ApiProperty()
-  @Column({ type: 'text', default: null }) // verificar se deixa obrigatorio no dto
+  @IsNotEmpty()
+  @Column({ type: 'text', default: null })
   address: string;
 
   @ApiProperty()
-  @Column({ length: 20, default: null }) // verificar se deixa obrigatorio no dto
+  @IsNotEmpty()
+  @Column({ length: 20, default: null })
   phone: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Column({ name: 'Email', length: 255, default: null })
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({ type: () => User })
+  @IsNotEmpty()
+  @ManyToOne(() => User, (user) => user.barbershops)
+  user: User;
+
+  //Falta inserir os horarios de funcionamento
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  format = () => {
+    if (this.phone) this.phone = this.phone.replace(/[^\d]+/g, '');
+  };
 }

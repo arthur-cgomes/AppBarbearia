@@ -19,7 +19,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { DeleteResponseDto } from 'src/common/dto/delete-response.dto';
+import { DeleteResponseDto } from '../common/dto/delete-response.dto';
 import { BarberShopService } from './barber-shop.service';
 import { BarberShopDto } from './dto/barbershop.dto';
 import { CreateBarberShopDto } from './dto/create-barbershop.dto';
@@ -34,11 +34,11 @@ export class BarberShopController {
 
   @Post()
   @ApiOperation({
-    summary: 'Criar um BarbarShop',
+    summary: 'Cria uma barbearia',
   })
   @ApiCreatedResponse({ type: BarberShopDto })
   @ApiConflictResponse({
-    description: 'Uma Barbershop com esse nome já existe',
+    description: 'Uma barbearia com esse CNPJ já existe',
   })
   async CreateBarberShop(@Body() barbershop: CreateBarberShopDto) {
     return await this.barbershopService.createBarberShop(barbershop);
@@ -46,10 +46,10 @@ export class BarberShopController {
 
   @Put(':id')
   @ApiOperation({
-    summary: 'Atualiza uma BarbersShop',
+    summary: 'Atualiza uma barbearia',
   })
   @ApiOkResponse({ type: BarberShopDto })
-  @ApiNotFoundResponse({ description: 'BarberShop não encontrada' })
+  @ApiNotFoundResponse({ description: 'Barbearia não encontrada' })
   @ApiBadRequestResponse({
     description: 'Dados inválidos',
   })
@@ -65,39 +65,48 @@ export class BarberShopController {
 
   @Get(':id')
   @ApiOperation({
-    summary: 'Retorna uma BarberShop pelo id',
+    summary: 'Retorna uma barbearia pelo id',
   })
   @ApiOkResponse({ type: BarberShopDto })
-  @ApiNotFoundResponse({ description: 'BarberShop não encontrada' })
+  @ApiNotFoundResponse({ description: 'Barbearia não encontrada' })
   async GetBarberShop(@Param('id') id: string) {
     return await this.barbershopService.getBarberShopById(id);
   }
 
   @Get()
   @ApiOperation({
-    summary: 'Retorna todas as Barbershops',
+    summary: 'Retorna todas as barbearias',
   })
   @ApiQuery({ name: 'take', required: false })
   @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'barbershopId', required: false })
   @ApiQuery({ name: 'search', required: false })
   @ApiOkResponse({ type: GetAllBarberShopResponseDto })
   async GetAllBarberShop(
     @Query('take') take = 10,
     @Query('skip') skip = 0,
+    @Query('barbershopId') barbershopId: string,
     @Query('search') search?: string,
   ) {
-    return await this.barbershopService.getAllBarberShop(take, skip, search);
+    return await this.barbershopService.getAllBarberShop(
+      take,
+      skip,
+      barbershopId,
+      search,
+    );
   }
 
-  @Delete(':id')
+  @Delete(':barbershopId')
   @ApiOperation({
-    summary: 'Deleta uma BarberShop pelo id',
+    summary: 'Exclui uma barbearia',
   })
   @ApiOkResponse({ type: DeleteResponseDto })
   @ApiNotFoundResponse({
     description: 'BarberShop não encontrada',
   })
-  async DeleteBarberShop(@Param('id') id: string) {
-    return { message: await this.barbershopService.deleteBarberShop(id) };
+  async deleteBarberShop(@Param('barbershopId') barbershopId: string) {
+    return {
+      message: await this.barbershopService.deleteBarberShop(barbershopId),
+    };
   }
 }
