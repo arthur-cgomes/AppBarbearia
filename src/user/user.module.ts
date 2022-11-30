@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Scheduling } from 'src/scheduling/entity/scheduling.entity';
 import { UserTypeModule } from '../user-type/user-type.module';
 import { User } from './entity/user.entity';
 import { UserController } from './user.controller';

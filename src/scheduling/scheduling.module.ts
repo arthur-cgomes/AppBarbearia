@@ -8,7 +8,12 @@ import { BarberShopModule } from 'src/barber-shop/barber-shop.module';
 import { ServicesModule } from 'src/services/services.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Scheduling]),UserModule, BarberShopModule, ServicesModule],
+  imports: [
+    TypeOrmModule.forFeature([Scheduling]),
+    UserModule,
+    BarberShopModule,
+    ServicesModule,
+  ],
   controllers: [SchedulingController],
   providers: [SchedulingService],
   exports: [SchedulingService],

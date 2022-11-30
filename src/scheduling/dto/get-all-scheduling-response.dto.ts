@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Scheduling } from "../entity/scheduling.entity";
-import { SchedulingDto } from "./scheduling.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { Scheduling } from '../entity/scheduling.entity';
+import { SchedulingDto } from './scheduling.dto';
 
 export class GetAllSchedulingResponseDto {
   @ApiProperty()
