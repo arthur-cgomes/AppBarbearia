@@ -23,6 +23,7 @@ import { DeleteResponseDto } from 'src/common/dto/delete-response.dto';
 import { CreateSchedulingDto } from './dto/create-scheduling.dto';
 import { GetAllSchedulingResponseDto } from './dto/get-all-scheduling-response.dto';
 import { SchedulingDto } from './dto/scheduling.dto';
+import { UpdateSchedulingDto } from './dto/update-scheduling.dto';
 import { SchedulingService } from './scheduling.service';
 
 @ApiBearerAuth()
@@ -54,7 +55,7 @@ export class SchedulingController {
   })
   async updateScheduling(
     @Param('schedulingId') schedulingId: string,
-    @Body() updateSchedulingDto: CreateSchedulingDto,
+    @Body() updateSchedulingDto: UpdateSchedulingDto,
   ) {
     return await this.schedulingService.updateScheduling(
       schedulingId,

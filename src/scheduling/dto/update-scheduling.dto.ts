@@ -9,4 +9,8 @@ export class UpdateSchedulingDto {
   @ApiProperty()
   @IsOptional()
   serviceId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  date: Date;
 }

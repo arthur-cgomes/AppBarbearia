@@ -11,6 +11,7 @@ import { FindManyOptions, Repository } from 'typeorm';
 import { Scheduling } from './entity/scheduling.entity';
 import { CreateSchedulingDto } from './dto/create-scheduling.dto';
 import { GetAllSchedulingResponseDto } from './dto/get-all-scheduling-response.dto';
+import { UpdateSchedulingDto } from './dto/update-scheduling.dto';
 
 @Injectable()
 export class SchedulingService {
@@ -63,7 +64,7 @@ export class SchedulingService {
 
   public async updateScheduling(
     schedulingId: string,
-    updateSchedulingDto: CreateSchedulingDto,
+    updateSchedulingDto: UpdateSchedulingDto,
   ): Promise<Scheduling> {
     const scheduling = await this.schedulingRepository.findOne({
       where: { id: schedulingId },
@@ -96,7 +97,7 @@ export class SchedulingService {
   public async getAllScheduling(
     take: number,
     skip: number,
-    userId: string,
+    userId?: string,
     schedulingId?: string,
   ): Promise<GetAllSchedulingResponseDto> {
     const conditions: FindManyOptions<Scheduling> = {
@@ -106,7 +107,9 @@ export class SchedulingService {
 
     if (userId) {
       conditions.where = { id: userId };
-    } else if (schedulingId) {
+    } 
+    
+    if (schedulingId) {
       conditions.where = { id: schedulingId };
     }
 
