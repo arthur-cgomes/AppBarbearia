@@ -88,7 +88,7 @@ export class SchedulingService {
     });
 
     if (!scheduling) {
-      throw new NotFoundException('scheduling not found');
+      throw new NotFoundException('scheduling with this id not found');
     }
 
     return scheduling;

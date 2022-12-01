@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 import { User } from '../../user/entity/user.entity';
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
 import { BaseCollection } from '../../common/entity/base.entity';
-import { Scheduling } from 'src/scheduling/entity/scheduling.entity';
+import { Scheduling } from '../../scheduling/entity/scheduling.entity';
 
 @Entity()
 export class BarberShop extends BaseCollection {
