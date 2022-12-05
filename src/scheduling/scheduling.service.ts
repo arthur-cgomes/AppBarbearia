@@ -107,8 +107,8 @@ export class SchedulingService {
 
     if (userId) {
       conditions.where = { id: userId };
-    } 
-    
+    }
+
     if (schedulingId) {
       conditions.where = { id: schedulingId };
     }

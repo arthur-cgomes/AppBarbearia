@@ -1,6 +1,9 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MockRepository, repositoryMockFactory } from '../../utils/mock/test.util';
+import {
+  MockRepository,
+  repositoryMockFactory,
+} from '../../utils/mock/test.util';
 import { FindManyOptions, Repository } from 'typeorm';
 import { Scheduling } from '../entity/scheduling.entity';
 import { SchedulingService } from '../scheduling.service';
@@ -14,9 +17,7 @@ import { Service } from '../../services/entity/services.entity';
 
 describe('SchedulingService', () => {
   let service: SchedulingService;
-  let userService: UserService;
-  let barbershopService: BarberShopService;
-  let servicesService: ServicesService;
+
   let repositoryMock: MockRepository<Repository<Scheduling>>;
 
   beforeEach(async () => {
@@ -46,9 +47,6 @@ describe('SchedulingService', () => {
     }).compile();
 
     service = module.get<SchedulingService>(SchedulingService);
-    userService = module.get<UserService>(UserService);
-    barbershopService = module.get<BarberShopService>(BarberShopService);
-    servicesService = module.get<ServicesService>(ServicesService);
 
     repositoryMock = module.get(getRepositoryToken(Scheduling));
   });
@@ -82,7 +80,6 @@ describe('SchedulingService', () => {
     services,
   } as Scheduling;
 
-
   describe('getSchedulingById', () => {
     it('Should successfully get scheduling by id', async () => {
       repositoryMock.findOne = jest.fn().mockReturnValue(scheduling);
@@ -97,7 +94,8 @@ describe('SchedulingService', () => {
 
       repositoryMock.findOne = jest.fn();
 
-      await expect(service.getSchedulingById(scheduling.id),
+      await expect(
+        service.getSchedulingById(scheduling.id),
       ).rejects.toStrictEqual(error);
     });
   });
@@ -161,7 +159,12 @@ describe('SchedulingService', () => {
         .fn()
         .mockReturnValue([[scheduling], 10]);
 
-      const result = await service.getAllScheduling(take, skip, null, schedulingId);
+      const result = await service.getAllScheduling(
+        take,
+        skip,
+        null,
+        schedulingId,
+      );
 
       expect(result).toStrictEqual({
         skip: null,
