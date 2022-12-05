@@ -130,7 +130,7 @@ describe('SchedulingService', () => {
       const conditions: FindManyOptions<Scheduling> = {
         take,
         skip,
-        where: { users: { id: userId } },
+        where: { id: userId },
       };
 
       repositoryMock.findAndCount = jest
@@ -154,7 +154,7 @@ describe('SchedulingService', () => {
       const conditions: FindManyOptions<Scheduling> = {
         take,
         skip,
-        where: { barbershops: { id: schedulingId } },
+        where: { id: schedulingId },
       };
 
       repositoryMock.findAndCount = jest
@@ -187,9 +187,30 @@ describe('SchedulingService', () => {
       expect(result).toStrictEqual({
         skip: null,
         total: 0,
-        schedulings: [scheduling],
+        schedulings: [],
       });
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
+  });
+
+  describe('deleteScheduling', () => {
+    it('Should successfully delete a scheduling', async () => {
+      repositoryMock.findOne = jest.fn().mockReturnValue(scheduling);
+      repositoryMock.remove = jest.fn();
+
+      const result = await service.deleteScheduling(scheduling.id);
+
+      expect(result).toStrictEqual('removed');
+    });
+
+    it('Should throw the NotFoundException exception when scheduling not found', async () => {
+      const error = new NotFoundException('scheduling with this id not found');
+
+      repositoryMock.findOne = jest.fn();
+
+      await expect(
+        service.deleteScheduling(scheduling.id),
+      ).rejects.toStrictEqual(error);
     });
   });
 });

@@ -132,7 +132,7 @@ export class SchedulingService {
     });
 
     if (!deleteScheduling) {
-      throw new NotFoundException('scheduling not found');
+      throw new NotFoundException('scheduling with this id not found');
     }
 
     await this.schedulingRepository.remove(deleteScheduling);
