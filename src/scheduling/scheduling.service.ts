@@ -21,7 +21,7 @@ export class SchedulingService {
     private readonly servicesService: ServicesService,
     @InjectRepository(Scheduling)
     private readonly schedulingRepository: Repository<Scheduling>,
-  ) {}
+  ) { }
 
   public async createScheduling(
     createSchedulingDto: CreateSchedulingDto,
@@ -50,11 +50,11 @@ export class SchedulingService {
         {
           date: createSchedulingDto.date,
           barbershops: { id: createSchedulingDto.barberShopId },
-        }
+        },
       ],
-    })
+    });
     if (checkScheduling) {
-      throw new ConflictException('scheduling already exists');
+      throw new ConflictException('time not available');
     }
 
     const scheduling = new Scheduling();

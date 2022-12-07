@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, ILike, Repository } from 'typeorm';
+import { FindManyOptions, ILike, In, Repository } from 'typeorm';
 import { CreateServiceDto } from './dto/create-services.dto';
 import { GetAllServicesResponseDto } from './dto/get-all-services.dto';
 import { UpdateServiceDto } from './dto/update-services.dto';
@@ -52,6 +52,10 @@ export class ServicesService {
     if (!service) throw new NotFoundException('service with this id not found');
 
     return service;
+  }
+
+  public async getServiceByIds(ids: string[]): Promise<Service[]> {
+    return await this.servicesRepository.findBy({ id: In(ids) });
   }
 
   public async getAllServices(
