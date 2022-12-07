@@ -45,11 +45,16 @@ export class SchedulingService {
       throw new NotFoundException('service not found');
     }
 
-    const date = await this.schedulingRepository.findOne({
-      where: { date: createSchedulingDto.date },
-    });
-    if (date) {
-      throw new ConflictException('date not available');
+    const checkScheduling = await this.schedulingRepository.findOne({
+      where: [
+        {
+          date: createSchedulingDto.date,
+          barbershops: { id: createSchedulingDto.barberShopId },
+        }
+      ],
+    })
+    if (checkScheduling) {
+      throw new ConflictException('scheduling already exists');
     }
 
     const scheduling = new Scheduling();
