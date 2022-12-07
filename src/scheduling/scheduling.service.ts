@@ -49,7 +49,7 @@ export class SchedulingService {
       where: { date: createSchedulingDto.date },
     });
     if (date) {
-      throw new ConflictException('date not avaliable');
+      throw new ConflictException('date not available');
     }
 
     const scheduling = new Scheduling();
@@ -58,7 +58,6 @@ export class SchedulingService {
     scheduling.services = service;
     scheduling.date = createSchedulingDto.date;
 
-    await this.schedulingRepository.create(scheduling).save();
     return await this.schedulingRepository.create(scheduling).save();
   }
 
