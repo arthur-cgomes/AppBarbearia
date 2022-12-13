@@ -19,6 +19,7 @@ export class Barber extends BaseCollection {
     @ApiProperty()
     @IsNotEmpty()
     @OneToOne(() => BarberShop, (barbershop) => barbershop.barber)
+    barbershop: BarberShop
 
     @BeforeInsert()
     @BeforeUpdate()
