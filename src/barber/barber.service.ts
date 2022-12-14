@@ -4,8 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { timeStamp } from 'console';
-import { stringify } from 'querystring';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { CreateBarberDto } from './dto/create-barber.dto';
 import { UpdateBarberDto } from './dto/update-barber.dto';
@@ -71,6 +69,7 @@ export class BarberService {
       return { skip: null, total: 0, barbers };
     }
     const over = count - Number(skip) + Number(take);
+    skip = over <= 0 ? null : Number(skip) + Number(take);
 
     return { skip, total: count, barbers };
   }
@@ -79,7 +78,7 @@ export class BarberService {
     id: string,
     updateBarberDto: UpdateBarberDto,
   ): Promise<Barber> {
-    const checkBarber = await this.getBarberById(id);
+    await this.getBarberById(id);
 
     return await (
       await this.barberRepository.preload({ id, ...updateBarberDto })
