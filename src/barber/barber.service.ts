@@ -84,4 +84,13 @@ export class BarberService {
       await this.barberRepository.preload({ id, ...updateBarberDto })
     ).save();
   }
+
+  //testando delete e usando o serviço de get para procurar o id
+  public async deleteBarber(barberId: string): Promise<string> {
+    await this.getBarberById(barberId);
+
+    await this.barberRepository.delete(barberId);
+
+    return 'removed';
+  }
 }
