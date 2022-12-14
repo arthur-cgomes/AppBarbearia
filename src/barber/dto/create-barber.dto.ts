@@ -14,6 +14,5 @@ export class CreateBarberDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @OneToOne(() => BarberShop, (barbershop) => barbershop.barber)
   barbershop: BarberShop;
 }
