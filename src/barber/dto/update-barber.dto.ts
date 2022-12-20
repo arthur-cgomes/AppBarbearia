@@ -1,7 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, isNotEmpty } from "class-validator";
-import { OneToOne } from "typeorm";
-import { BarberShop } from "../../barber-shop/entity/barber-shop.entity";
+import { ApiProperty } from '@nestjs/swagger';
+import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 
 export class UpdateBarberDto {
   @ApiProperty()

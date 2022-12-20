@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { Column, OneToOne } from 'typeorm';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 
 export class CreateBarberDto {
