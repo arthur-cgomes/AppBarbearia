@@ -16,10 +16,10 @@ export class Barber extends BaseCollection {
   @Column({ length: 20, default: null })
   phone: string;
 
-  @ApiProperty({ type: () => BarberShop })
-  @IsNotEmpty()
-  @OneToOne(() => BarberShop, (barbershop) => barbershop.barber)
-  barbershop: BarberShop;
+    @ApiProperty()
+    @IsNotEmpty()
+    @OneToOne(() => BarberShop, (barbershop) => barbershop.barber)
+    barbershop: BarberShop
 
   @BeforeInsert()
   @BeforeUpdate()

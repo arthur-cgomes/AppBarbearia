@@ -34,6 +34,7 @@
     "class-validator": "^0.13.2",
     "dotenv-yaml": "^0.1.4",
     "mysql2": "^2.3.3",
+    "node": "^19.2.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
