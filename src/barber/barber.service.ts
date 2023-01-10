@@ -29,9 +29,9 @@ export class BarberService {
     return await this.barberRepository.create({ ...createBarberDto }).save();
   }
 
-  public async getBarberById(id: string): Promise<Barber> {
+  public async getBarberById(barberId: string): Promise<Barber> {
     const getBarber = await this.barberRepository.findOne({
-      where: [{ id }],
+      where: [{ id: barberId }],
     });
 
     if (!getBarber)

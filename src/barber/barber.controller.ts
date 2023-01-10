@@ -1,7 +1,9 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -26,5 +28,19 @@ export class BarberController {
   })
   async createbarber(@Body() createBarberDto: CreateBarberDto) {
     return await this.barberService.createBarber(createBarberDto);
+  }
+
+  @Get(':barberId')
+  @ApiOperation({
+    summary: 'Buscar um barbeiro pelo id',
+  })
+  @ApiOkResponse({
+    type: BarberDto,
+  })
+  @ApiNotFoundResponse({
+    description: 'Barbeiro não encontrado',
+  })
+  async getBarberById(@Param('barberId') barberId: string) {
+    return await this.barberService.getBarberById(barberId);
   }
 }
