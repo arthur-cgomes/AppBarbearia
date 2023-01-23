@@ -18,15 +18,27 @@ export class BarberService {
 
   public async createBarber(createBarberDto: CreateBarberDto): Promise<Barber> {
     const checkBarber = await this.barberRepository.findOne({
-      where: [{ name: createBarberDto.name, phone: createBarberDto.phone }],
+      where: [{ cpf: createBarberDto.cpf, phone: createBarberDto.phone }],
     });
-    // TESTANDO ELSE IF
-    if (checkBarber.name)
-      throw new ConflictException('barber already exists with this name');
+    if (checkBarber.cpf)
+      throw new ConflictException('barber already registered');
     else if (checkBarber.phone)
       throw new ConflictException('this number is already registered');
 
     return await this.barberRepository.create({ ...createBarberDto }).save();
+  }
+
+  public async updateBarber(
+    id: string,
+    updateBarberDto: UpdateBarberDto,
+  ): Promise<Barber> {
+    await this.getBarberById(id);
+
+    return await (
+      await this.barberRepository.preload({ 
+        id,
+        ...updateBarberDto })
+    ).save();
   }
 
   public async getBarberById(barberId: string): Promise<Barber> {
@@ -74,23 +86,14 @@ export class BarberService {
     return { skip, total: count, barbers };
   }
 
-  public async updateBarber(
-    id: string,
-    updateBarberDto: UpdateBarberDto,
-  ): Promise<Barber> {
-    await this.getBarberById(id);
-
-    return await (
-      await this.barberRepository.preload({ id, ...updateBarberDto })
-    ).save();
-  }
-
-  //testando delete e usando o serviço de get para procurar o id
   public async deleteBarber(barberId: string): Promise<string> {
-    await this.getBarberById(barberId);
-
+    const deleteBarber = await this.barberRepository.findOne({
+      where: { id: barberId },
+    });
+    if (!deleteBarber) {
+      throw new NotFoundException('barber with this id not found');
+    }
     await this.barberRepository.delete(barberId);
-
     return 'removed';
   }
 }
