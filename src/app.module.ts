@@ -9,7 +9,6 @@ import { NotificationModule } from './notification/notification.module';
 import { UserNotificationModule } from './user-notification/user-notification.module';
 import { ServicesModule } from './services/services.module';
 import { SchedulingModule } from './scheduling/scheduling.module';
-import { BarberModule } from './barber/barber.module';
 
 @Module({
   imports: [
@@ -21,8 +20,7 @@ import { BarberModule } from './barber/barber.module';
     UserNotificationModule,
     BarberShopModule,
     ServicesModule,
-    SchedulingModule,
-    BarberModule,
+    SchedulingModule
   ],
 })
 export class AppModule {}

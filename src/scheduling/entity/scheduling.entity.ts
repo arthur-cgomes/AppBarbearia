@@ -5,7 +5,6 @@ import { User } from '../../user/entity/user.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 import { IsNotEmpty } from 'class-validator';
-import { Barber } from '../../barber/entity/barber.entity';
 
 @Entity()
 export class Scheduling extends BaseCollection {
@@ -23,12 +22,7 @@ export class Scheduling extends BaseCollection {
   @ManyToOne(() => BarberShop, (barbershop) => barbershop.schedulings)
   barbershops: BarberShop;
 
-  @ApiProperty({ type: () => Barber })
-  @ManyToOne(() => Barber, (barber) => barber.schedulings)
-  barbers: Barber;
-
   @ApiProperty({ type: () => Service })
   @ManyToOne(() => Service, (service) => service.schedulings)
   services: Service;
-
 }

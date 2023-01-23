@@ -11,7 +11,6 @@ import {
 } from 'typeorm';
 import { BaseCollection } from '../../common/entity/base.entity';
 import { Scheduling } from '../../scheduling/entity/scheduling.entity';
-import { Barber } from '../../barber/entity/barber.entity';
 
 @Entity()
 export class BarberShop extends BaseCollection {
@@ -50,13 +49,6 @@ export class BarberShop extends BaseCollection {
   @IsNotEmpty()
   @ManyToOne(() => Scheduling, (scheduling) => scheduling.barbershops)
   schedulings: Scheduling;
-
-  @ApiProperty({ type: () => Barber })
-  @IsNotEmpty()
-  @OneToOne(() => Barber, (barber) => barber.barbershop)
-  barber: Barber;
-
-  //Falta inserir os horarios de funcionamento
 
   @BeforeInsert()
   @BeforeUpdate()

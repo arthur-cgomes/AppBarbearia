@@ -12,10 +12,6 @@ export class CreateSchedulingDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  barberId: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
   serviceId: string;
 
   @ApiProperty()

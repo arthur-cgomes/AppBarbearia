@@ -18,8 +18,6 @@ import { UserNotification } from '../../user-notification/entity/user-notificati
 import { Service } from '../../services/entity/services.entity';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 import { Scheduling } from '../../scheduling/entity/scheduling.entity';
-import { Barber } from 'src/barber/entity/barber.entity';
-
 @Entity()
 @Unique(['email'])
 export class User extends BaseCollection {
