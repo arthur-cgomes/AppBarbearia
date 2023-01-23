@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty } from 'class-validator';
+import { BarberShop } from 'src/barber-shop/entity/barber-shop.entity';
 import { BaseCollection } from 'src/common/entity/base.entity';
-import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToOne } from 'typeorm';
 
 @Entity()
 export class Barber extends BaseCollection {
@@ -24,6 +25,11 @@ export class Barber extends BaseCollection {
   @IsNotEmpty()
   @Column({ length: 20 })
   phone: string;
+
+  @ApiProperty({ type: () => BarberShop })
+  @IsNotEmpty()
+  @OneToOne(() => BarberShop, (barbershop) => barbershop.barbers)
+  barbershops: BarberShop;
 
   @BeforeInsert()
   @BeforeUpdate()
