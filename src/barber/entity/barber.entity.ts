@@ -7,7 +7,7 @@ import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 export class Barber extends BaseCollection {
   @ApiProperty()
   @IsNotEmpty()
-  @Column({ length: 20, default: null })
+  @Column({ length: 20, default: null }) // Adicionar mascara de CPF e limitar a 11 caracteres
   cpf: string;
 
   @ApiProperty()

@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Barber } from "../entity/barber.entity";
-import { BarberDto } from "./barber.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { Barber } from '../entity/barber.entity';
+import { BarberDto } from './barber.dto';
 
 export class GetAllBarbersResponseDto {
   @ApiProperty()

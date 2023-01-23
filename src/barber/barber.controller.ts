@@ -6,18 +6,23 @@ import {
   Param,
   Put,
   Get,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
+  ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { DeleteResponseDto } from 'src/common/dto/delete-response.dto';
 import { BarberService } from './barber.service';
+import { BarberDto } from './dto/barber.dto';
 import { CreateBarberDto } from './dto/create-barber.dto';
+import { GetAllBarbersResponseDto } from './dto/get-all-barber-response.dto';
 import { UpdateBarberDto } from './dto/update-barber.dto';
 
 @ApiTags('Barber')
@@ -29,7 +34,7 @@ export class BarberController {
   @ApiOperation({
     summary: 'Adiona um novo barbeiro',
   })
-  //@ApiCreatedResponse({ type: * })
+  @ApiCreatedResponse({ type: BarberDto })
   @ApiConflictResponse({
     description: 'Barbeiro já cadastrado',
   })
@@ -41,7 +46,7 @@ export class BarberController {
   @ApiOperation({
     summary: 'Atualiza um barbeiro',
   })
-  //@ApiOkResponse({ type: * })
+  @ApiCreatedResponse({ type: BarberDto })
   @ApiNotFoundResponse({ description: 'Barbeiro não encontrado' })
   @ApiBadRequestResponse({
     description: 'Dados inválidos',
@@ -57,13 +62,27 @@ export class BarberController {
   @ApiOperation({
     summary: 'Retorna um barbeiro pelo id',
   })
-  //@ApiOkResponse({ type: * })
+  @ApiCreatedResponse({ type: BarberDto })
   @ApiNotFoundResponse({ description: 'Barbeiro não encontrado' })
   async getBarberbyId(@Param('barberId') barberId: string) {
     return await this.barberService.getBarberbyId(barberId);
   }
 
-  //Fazer o getAllBarbers
+  @Get()
+  @ApiOperation({
+    summary: 'Retorna todos os barbeiros',
+  })
+  @ApiQuery({ name: 'take', required: false })
+  @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'barberId', required: false })
+  @ApiOkResponse({ type: GetAllBarbersResponseDto })
+  async getAllBarbers(
+    @Query('take') take = 10,
+    @Query('skip') skip = 0,
+    @Query('barberId') barberId?: string,
+  ) {
+    return await this.barberService.getAllBarbers(take, skip, barberId);
+  }
 
   @Delete(':barberId')
   @ApiOperation({
