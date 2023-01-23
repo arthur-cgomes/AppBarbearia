@@ -13,7 +13,6 @@ import { CreateSchedulingDto } from './dto/create-scheduling.dto';
 import { GetAllSchedulingResponseDto } from './dto/get-all-scheduling-response.dto';
 import { UpdateSchedulingDto } from './dto/update-scheduling.dto';
 import { BarberService } from '../barber/barber.service';
-import { threadId } from 'worker_threads';
 
 @Injectable()
 export class SchedulingService {

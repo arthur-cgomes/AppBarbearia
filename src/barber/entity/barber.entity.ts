@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { Scheduling } from 'src/scheduling/entity/scheduling.entity';
+import { Scheduling } from '../../scheduling/entity/scheduling.entity';
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToOne } from 'typeorm';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 import { BaseCollection } from '../../common/entity/base.entity';
