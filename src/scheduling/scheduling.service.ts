@@ -21,7 +21,7 @@ export class SchedulingService {
     private readonly servicesService: ServicesService,
     @InjectRepository(Scheduling)
     private readonly schedulingRepository: Repository<Scheduling>,
-  ) { }
+  ) {}
 
   public async createScheduling(
     createSchedulingDto: CreateSchedulingDto,

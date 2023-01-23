@@ -20,7 +20,7 @@ import { SchedulingModule } from './scheduling/scheduling.module';
     UserNotificationModule,
     BarberShopModule,
     ServicesModule,
-    SchedulingModule
+    SchedulingModule,
   ],
 })
 export class AppModule {}

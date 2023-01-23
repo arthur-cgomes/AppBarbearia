@@ -14,6 +14,7 @@ import { ServicesService } from '../../services/services.service';
 import { User } from '../../user/entity/user.entity';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 import { Service } from '../../services/entity/services.entity';
+import { UpdateSchedulingDto } from '../dto/update-scheduling.dto';
 
 describe('SchedulingService', () => {
   let service: SchedulingService;
@@ -68,6 +69,7 @@ describe('SchedulingService', () => {
   } as BarberShop;
 
   const services: Service = {
+    id: 'e2f390e3-f989-4abd-9a6f-e7679d6d9278',
     name: 'name',
     type: 'type',
     value: 'value',
@@ -79,6 +81,75 @@ describe('SchedulingService', () => {
     barbershops,
     services,
   } as Scheduling;
+
+  //describe('createScheduling', () => {
+  //  const createSchedulingDto: CreateSchedulingDto = {
+  //    userId: 'users.id',
+  //    barberShopId: 'barbershops.id',
+  //    serviceId: 'services.id',
+  //    date: new Date(),
+  //  };
+  //
+  //  it('Should successfully create a scheduling', async () => {
+  //    repositoryMock.findOne = jest.fn();
+  //    repositoryMock.create = jest.fn().mockReturnValue({ save: () => scheduling });
+  //
+  //    const result = await service.createScheduling(createSchedulingDto);
+  //
+  //    expect(result).toStrictEqual(scheduling);
+  //    expect(repositoryMock.create).toHaveBeenCalledWith({
+  //      ...createSchedulingDto
+  //    });
+  //  });
+  //
+  //  it('Should throw the NotFoundException exception when user not found', async () => {
+  //    const error = new NotFoundException('user not found');
+  //
+  //    repositoryMock.findOne = jest.fn().mockReturnValue(null);
+  //
+  //    await expect(
+  //      service.createScheduling(createSchedulingDto),
+  //    ).rejects.toStrictEqual(error);
+  //    expect(repositoryMock.create).not.toHaveBeenCalled();
+  //  });
+  //});
+
+  describe('updateScheduling', () => {
+    const updateSchedulingDto: UpdateSchedulingDto = {
+      barberShopId: 'barbershops.id',
+      serviceId: 'services.id',
+      date: new Date(),
+    };
+
+    it('Should successfully update a scheduling', async () => {
+      repositoryMock.findOne = jest.fn().mockReturnValue(scheduling);
+      repositoryMock.preload = jest
+        .fn()
+        .mockReturnValue({ save: () => scheduling });
+
+      const result = await service.updateScheduling(
+        scheduling.id,
+        updateSchedulingDto,
+      );
+
+      expect(result).toStrictEqual(scheduling);
+      expect(repositoryMock.preload).toHaveBeenCalledWith({
+        id: scheduling.id,
+        ...updateSchedulingDto,
+      });
+    });
+
+    it('Should throw the NotFoundException exception when scheduling not found', async () => {
+      const error = new NotFoundException('scheduling not found');
+
+      repositoryMock.findOne = jest.fn();
+
+      await expect(
+        service.updateScheduling(scheduling.id, updateSchedulingDto),
+      ).rejects.toStrictEqual(error);
+      expect(repositoryMock.preload).not.toHaveBeenCalled();
+    });
+  });
 
   describe('getSchedulingById', () => {
     it('Should successfully get scheduling by id', async () => {
