@@ -1,8 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { User } from '../../user/entity/user.entity';
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 import { BaseCollection } from '../../common/entity/base.entity';
+import { Barber } from '../../barber/entity/barber.entity';
 
 @Entity()
 export class BarberShop extends BaseCollection {
@@ -36,6 +44,11 @@ export class BarberShop extends BaseCollection {
   @IsNotEmpty()
   @ManyToOne(() => User, (user) => user.barbershops)
   user: User;
+
+  @ApiProperty({ type: () => Barber })
+  @IsNotEmpty()
+  @OneToOne(() => Barber, (barber) => barber.barbershop)
+  barber: Barber;
 
   //Falta inserir os horarios de funcionamento
 
