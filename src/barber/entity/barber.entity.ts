@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { Scheduling } from 'src/scheduling/entity/scheduling.entity';
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToOne } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToOne } from 'typeorm';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 import { BaseCollection } from '../../common/entity/base.entity';
 
@@ -24,7 +24,7 @@ export class Barber extends BaseCollection {
 
   @ApiProperty({ type: () => Scheduling })
   @IsNotEmpty()
-  @ManyToOne(() => Scheduling, (scheduling) => scheduling.barbers)
+  @OneToOne(() => Scheduling, (scheduling) => scheduling.barbers)
   schedulings: Scheduling;
 
   @BeforeInsert()
