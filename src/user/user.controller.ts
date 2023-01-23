@@ -25,7 +25,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
-@ApiTags('Services')
 @ApiTags('User')
 @Controller('users')
 export class UserController {
