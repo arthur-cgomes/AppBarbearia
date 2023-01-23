@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import {
@@ -21,11 +22,12 @@ import { BarberService } from './barber.service';
 import { BarberDto } from './dto/barber.dto';
 import { CreateBarberDto } from './dto/create-barber.dto';
 import { GetAllBarberResponseDto } from './dto/get-all-barber-response.dto';
+import { UpdateBarberDto } from './dto/update-barber.dto';
 
 @ApiTags('Barber')
-@Controller('barber')
+@Controller('barbers')
 export class BarberController {
-  constructor(private readonly barberService: BarberService) {}
+  constructor(private readonly barberService: BarberService) { }
 
   @Post()
   @ApiOperation({
@@ -35,15 +37,26 @@ export class BarberController {
     type: BarberDto,
   })
   @ApiConflictResponse({
-    description: 'Barbearia já cadastrada',
+    description: 'Barbeiro já cadastrado',
   })
   async createbarber(@Body() createBarberDto: CreateBarberDto) {
     return await this.barberService.createBarber(createBarberDto);
   }
 
+  @Put(':barberId')
+  @ApiOperation({ summary: 'Atualiza as informações do barbeiro' })
+  @ApiOkResponse({ type: BarberDto })
+  @ApiNotFoundResponse({ description: 'Barbeiro não encontrado' })
+  async updateBarber(
+    @Param('id') id: string,
+    @Body() updateBarberDto: UpdateBarberDto,
+  ) {
+    return await this.barberService.updateBarber(id, updateBarberDto);
+  }
+
   @Get(':barberId')
   @ApiOperation({
-    summary: 'Buscar um barbeiro pelo id',
+    summary: 'Retorna um barbeiro pelo id',
   })
   @ApiOkResponse({
     type: BarberDto,
@@ -73,15 +86,13 @@ export class BarberController {
 
   @Delete(':id')
   @ApiOperation({
-    summary: 'Exclui uma validação de protótipos',
+    summary: 'Exclui um barbeiro',
   })
   @ApiOkResponse({ type: DeleteResponseDto })
   @ApiNotFoundResponse({
-    description: 'Validação de protótipos não encontrada',
+    description: 'Barbeiro não encontrado',
   })
-  async DeletePrototypingValidation(@Param('id') id: string) {
-    return {
-      message: await this.barberService.deleteBarber(id),
-    };
+  async deleteBarber(@Param('id') id: string) {
+    return { message: await this.barberService.deleteBarber(id) };
   }
 }
