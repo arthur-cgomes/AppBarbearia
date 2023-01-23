@@ -1,21 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 
-export class CreateBarberDto {
-  @ApiProperty({ type: String })
+export class CreateSchedulingDto {
+  @ApiProperty()
   @IsNotEmpty()
-  cpf: string;
+  userId: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  name: string;
+  barberShopId: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  phone: string;
+  serviceId: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  barbershop: BarberShop;
+  date: Date;
 }

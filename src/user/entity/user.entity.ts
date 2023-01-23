@@ -15,9 +15,9 @@ import * as bcrypt from 'bcrypt';
 import { UserType } from '../../user-type/entity/user-type.entity';
 import { Notification } from '../../notification/entity/notification.entity';
 import { UserNotification } from '../../user-notification/entity/user-notification.entity';
-import { Services } from '../../services/entity/services.entity';
+import { Service } from '../../services/entity/services.entity';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
-
+import { Scheduling } from '../../scheduling/entity/scheduling.entity';
 @Entity()
 @Unique(['email'])
 export class User extends BaseCollection {
@@ -44,7 +44,7 @@ export class User extends BaseCollection {
   phone: string;
 
   @ApiProperty({ type: () => UserType })
-  @ManyToMany(() => UserType, (usertype) => usertype.user)
+  @ManyToMany(() => UserType, (usertype) => usertype.users)
   @JoinTable({ name: 'user_user_type' })
   userTypes: UserType[];
 
@@ -63,10 +63,14 @@ export class User extends BaseCollection {
   @OneToMany(() => BarberShop, (barbershop) => barbershop.user)
   barbershops: BarberShop[];
 
-  @ApiProperty({ type: () => Services })
-  @ManyToMany(() => Services, (services) => services.user)
+  @ApiProperty({ type: () => Service })
+  @ManyToMany(() => Service, (service) => service.users)
   @JoinTable({ name: 'user_services' })
-  services: Services[];
+  services: Service[];
+
+  @ApiProperty({ type: () => Scheduling })
+  @OneToMany(() => Scheduling, (scheduling) => scheduling.users)
+  schedulings: Scheduling[];
 
   @BeforeInsert()
   @BeforeUpdate()

@@ -4,22 +4,22 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, ILike, Repository } from 'typeorm';
+import { FindManyOptions, ILike, In, Repository } from 'typeorm';
 import { CreateServiceDto } from './dto/create-services.dto';
 import { GetAllServicesResponseDto } from './dto/get-all-services.dto';
 import { UpdateServiceDto } from './dto/update-services.dto';
-import { Services } from './entity/services.entity';
+import { Service } from './entity/services.entity';
 
 @Injectable()
 export class ServicesService {
   constructor(
-    @InjectRepository(Services)
-    private readonly servicesRepository: Repository<Services>,
+    @InjectRepository(Service)
+    private readonly servicesRepository: Repository<Service>,
   ) {}
 
   public async createService(
     createServiceDto: CreateServiceDto,
-  ): Promise<Services> {
+  ): Promise<Service> {
     const chekService = await this.servicesRepository.findOne({
       where: { name: createServiceDto.name },
     });
@@ -34,7 +34,7 @@ export class ServicesService {
   public async updateService(
     id: string,
     updateServiceDto: UpdateServiceDto,
-  ): Promise<Services> {
+  ): Promise<Service> {
     await this.getServiceById(id);
 
     return await (
@@ -45,7 +45,7 @@ export class ServicesService {
     ).save();
   }
 
-  public async getServiceById(id: string): Promise<Services> {
+  public async getServiceById(id: string): Promise<Service> {
     const service = await this.servicesRepository.findOne({
       where: { id },
     });
@@ -54,13 +54,17 @@ export class ServicesService {
     return service;
   }
 
+  public async getServiceByIds(ids: string[]): Promise<Service[]> {
+    return await this.servicesRepository.findBy({ id: In(ids) });
+  }
+
   public async getAllServices(
     take: number,
     skip: number,
     serviceId: string,
     search?: string,
   ): Promise<GetAllServicesResponseDto> {
-    const conditions: FindManyOptions<Services> = {
+    const conditions: FindManyOptions<Service> = {
       take,
       skip,
     };

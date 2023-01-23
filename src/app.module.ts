@@ -8,7 +8,7 @@ import { UserTypeModule } from './user-type/user-type.module';
 import { NotificationModule } from './notification/notification.module';
 import { UserNotificationModule } from './user-notification/user-notification.module';
 import { ServicesModule } from './services/services.module';
-import { BarberModule } from './barber/barber.module';
+import { SchedulingModule } from './scheduling/scheduling.module';
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { BarberModule } from './barber/barber.module';
     UserNotificationModule,
     BarberShopModule,
     ServicesModule,
-    BarberModule,
+    SchedulingModule,
   ],
 })
 export class AppModule {}

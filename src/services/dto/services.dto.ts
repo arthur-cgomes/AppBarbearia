@@ -1,4 +1,4 @@
 import { OmitType } from '@nestjs/swagger';
-import { Services } from '../entity/services.entity';
+import { Service } from '../entity/services.entity';
 
-export class ServicesDto extends OmitType(Services, ['user']) {}
+export class ServicesDto extends OmitType(Service, ['users']) {}

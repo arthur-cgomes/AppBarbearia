@@ -13,5 +13,5 @@ export class UserType extends BaseCollection {
 
   @ApiProperty()
   @ManyToMany(() => User, (user) => user.userTypes)
-  user: User[];
+  users: User[];
 }

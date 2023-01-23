@@ -1,17 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 
-export class UpdateBarberDto {
+export class UpdateSchedulingDto {
   @ApiProperty()
   @IsOptional()
-  name: string;
-
-  @ApiProperty()
-  @IsOptional()
-  phone: string;
+  barberShopId: string;
 
   @ApiProperty()
   @IsOptional()
-  barbershop: BarberShop;
+  serviceId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  date: Date;
 }
