@@ -8,6 +8,11 @@ import { BaseCollection } from '../../common/entity/base.entity';
 export class Barber extends BaseCollection {
   @ApiProperty()
   @IsNotEmpty()
+  @Column({ length: 11, unique: true})
+  cpf: string;
+  
+  @ApiProperty()
+  @IsNotEmpty()
   @Column({ length: 255 })
   name: string;
 
