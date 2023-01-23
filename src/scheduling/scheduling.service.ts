@@ -12,12 +12,15 @@ import { Scheduling } from './entity/scheduling.entity';
 import { CreateSchedulingDto } from './dto/create-scheduling.dto';
 import { GetAllSchedulingResponseDto } from './dto/get-all-scheduling-response.dto';
 import { UpdateSchedulingDto } from './dto/update-scheduling.dto';
+import { BarberService } from '../barber/barber.service';
+import { threadId } from 'worker_threads';
 
 @Injectable()
 export class SchedulingService {
   constructor(
     private readonly userService: UserService,
     private readonly barbershopService: BarberShopService,
+    private readonly barberService: BarberService,
     private readonly servicesService: ServicesService,
     @InjectRepository(Scheduling)
     private readonly schedulingRepository: Repository<Scheduling>,
@@ -38,6 +41,13 @@ export class SchedulingService {
       throw new NotFoundException('barberShop not found');
     }
 
+    const barber = await this.barberService.getBarberById(
+      createSchedulingDto.barberId,
+      );
+    if (!barber) {
+      throw new NotFoundException('barber not found');
+    }
+
     const service = await this.servicesService.getServiceById(
       createSchedulingDto.serviceId,
     );
@@ -50,6 +60,7 @@ export class SchedulingService {
         {
           date: createSchedulingDto.date,
           barbershops: { id: createSchedulingDto.barberShopId },
+          barbers: { id: createSchedulingDto.barberId },
         },
       ],
     });
@@ -60,6 +71,7 @@ export class SchedulingService {
     const scheduling = new Scheduling();
     scheduling.users = user;
     scheduling.barbershops = barbershop;
+    scheduling.barbers = barber;
     scheduling.services = service;
     scheduling.date = createSchedulingDto.date;
 

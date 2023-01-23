@@ -3,15 +3,17 @@ import { SchedulingService } from './scheduling.service';
 import { SchedulingController } from './scheduling.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Scheduling } from './entity/scheduling.entity';
-import { UserModule } from 'src/user/user.module';
-import { BarberShopModule } from 'src/barber-shop/barber-shop.module';
-import { ServicesModule } from 'src/services/services.module';
+import { UserModule } from '../user/user.module';
+import { BarberShopModule } from '../barber-shop/barber-shop.module';
+import { ServicesModule } from '../services/services.module';
+import { BarberModule } from '../barber/barber.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Scheduling]),
     UserModule,
     BarberShopModule,
+    BarberModule,
     ServicesModule,
   ],
   controllers: [SchedulingController],
