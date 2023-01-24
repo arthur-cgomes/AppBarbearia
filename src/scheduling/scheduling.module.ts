@@ -6,12 +6,14 @@ import { Scheduling } from './entity/scheduling.entity';
 import { UserModule } from '../user/user.module';
 import { BarberShopModule } from '../barber-shop/barber-shop.module';
 import { ServicesModule } from '../services/services.module';
+import { BarberModule } from 'src/barber/barber.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Scheduling]),
     UserModule,
     BarberShopModule,
+    BarberModule,
     ServicesModule,
   ],
   controllers: [SchedulingController],
