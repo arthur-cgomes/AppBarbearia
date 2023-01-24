@@ -105,8 +105,8 @@ describe('UserNotificationService', () => {
       });
     });
 
-    it('Should throw the BadRequestException exception when user notification not found', async () => {
-      const error = new BadRequestException('user notification not found');
+    it('Should throw the NotFoundException exception when user notification not found', async () => {
+      const error = new NotFoundException('user notification not found');
 
       repositoryMock.findOne = jest.fn();
 

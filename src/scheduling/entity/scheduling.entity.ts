@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseCollection } from '../../common/entity/base.entity';
-import { Service } from '../../services/entity/services.entity';
+import { Services } from '../../services/entity/services.entity';
 import { User } from '../../user/entity/user.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
@@ -27,7 +27,7 @@ export class Scheduling extends BaseCollection {
   @ManyToOne(() => Barber, (barber) => barber.scheduling)
   barber: Barber;
 
-  @ApiProperty({ type: () => Service })
-  @ManyToOne(() => Service, (service) => service.schedulings)
-  services: Service;
+  @ApiProperty({ type: () => Services })
+  @ManyToOne(() => Services, (service) => service.schedulings)
+  services: Services;
 }

@@ -15,7 +15,7 @@ import * as bcrypt from 'bcrypt';
 import { UserType } from '../../user-type/entity/user-type.entity';
 import { Notification } from '../../notification/entity/notification.entity';
 import { UserNotification } from '../../user-notification/entity/user-notification.entity';
-import { Service } from '../../services/entity/services.entity';
+import { Services } from '../../services/entity/services.entity';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 import { Scheduling } from '../../scheduling/entity/scheduling.entity';
 @Entity()
@@ -63,10 +63,10 @@ export class User extends BaseCollection {
   @OneToMany(() => BarberShop, (barbershop) => barbershop.user)
   barbershops: BarberShop[];
 
-  @ApiProperty({ type: () => Service })
-  @ManyToMany(() => Service, (service) => service.users)
+  @ApiProperty({ type: () => Services })
+  @ManyToMany(() => Services, (service) => service.users)
   @JoinTable({ name: 'user_services' })
-  services: Service[];
+  services: Services[];
 
   @ApiProperty({ type: () => Scheduling })
   @OneToMany(() => Scheduling, (scheduling) => scheduling.user)

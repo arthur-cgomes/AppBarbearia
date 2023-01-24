@@ -8,18 +8,18 @@ import { FindManyOptions, ILike, In, Repository } from 'typeorm';
 import { CreateServiceDto } from './dto/create-services.dto';
 import { GetAllServicesResponseDto } from './dto/get-all-services.dto';
 import { UpdateServiceDto } from './dto/update-services.dto';
-import { Service } from './entity/services.entity';
+import { Services } from './entity/services.entity';
 
 @Injectable()
 export class ServicesService {
   constructor(
-    @InjectRepository(Service)
-    private readonly servicesRepository: Repository<Service>,
+    @InjectRepository(Services)
+    private readonly servicesRepository: Repository<Services>,
   ) {}
 
   public async createService(
     createServiceDto: CreateServiceDto,
-  ): Promise<Service> {
+  ): Promise<Services> {
     const chekService = await this.servicesRepository.findOne({
       where: { name: createServiceDto.name },
     });
@@ -34,7 +34,7 @@ export class ServicesService {
   public async updateService(
     id: string,
     updateServiceDto: UpdateServiceDto,
-  ): Promise<Service> {
+  ): Promise<Services> {
     await this.getServiceById(id);
 
     return await (
@@ -45,7 +45,7 @@ export class ServicesService {
     ).save();
   }
 
-  public async getServiceById(id: string): Promise<Service> {
+  public async getServiceById(id: string): Promise<Services> {
     const service = await this.servicesRepository.findOne({
       where: { id },
     });
@@ -54,17 +54,13 @@ export class ServicesService {
     return service;
   }
 
-  public async getServiceByIds(ids: string[]): Promise<Service[]> {
-    return await this.servicesRepository.findBy({ id: In(ids) });
-  }
-
   public async getAllServices(
     take: number,
     skip: number,
     serviceId: string,
     search?: string,
   ): Promise<GetAllServicesResponseDto> {
-    const conditions: FindManyOptions<Service> = {
+    const conditions: FindManyOptions<Services> = {
       take,
       skip,
     };

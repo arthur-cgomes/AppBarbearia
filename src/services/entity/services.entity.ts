@@ -6,7 +6,7 @@ import { User } from '../../user/entity/user.entity';
 import { Scheduling } from '../../scheduling/entity/scheduling.entity';
 
 @Entity()
-export class Service extends BaseCollection {
+export class Services extends BaseCollection {
   @ApiProperty()
   @IsNotEmpty()
   @Column({ length: 200 })

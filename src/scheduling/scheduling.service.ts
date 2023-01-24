@@ -12,7 +12,7 @@ import { Scheduling } from './entity/scheduling.entity';
 import { CreateSchedulingDto } from './dto/create-scheduling.dto';
 import { GetAllSchedulingResponseDto } from './dto/get-all-scheduling-response.dto';
 import { UpdateSchedulingDto } from './dto/update-scheduling.dto';
-import { BarberService } from 'src/barber/barber.service';
+import { BarberService } from '../barber/barber.service';
 
 @Injectable()
 export class SchedulingService {

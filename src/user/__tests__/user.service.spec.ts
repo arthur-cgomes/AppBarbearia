@@ -10,9 +10,12 @@ import { User } from '../entity/user.entity';
 import { UserService } from '../user.service';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserTypeService } from '../../user-type/user-type.service';
+import { UserType } from '../../user-type/entity/user-type.entity';
 
 describe('UserService', () => {
   let service: UserService;
+  let userTypeService: UserTypeService;
   let repositoryMock: MockRepository<Repository<User>>;
 
   beforeAll(async () => {
@@ -23,10 +26,16 @@ describe('UserService', () => {
           provide: getRepositoryToken(User),
           useValue: repositoryMockFactory<User>(),
         },
+        UserTypeService,
+        {
+          provide: getRepositoryToken(UserType),
+          useValue: repositoryMockFactory<UserType>(),
+        },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
+    userTypeService = module.get<UserTypeService>(UserTypeService);
 
     repositoryMock = module.get(getRepositoryToken(User));
   });
