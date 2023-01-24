@@ -6,7 +6,6 @@ import {
   BeforeUpdate,
   Column,
   Entity,
-  ManyToOne,
   OneToMany,
   OneToOne,
 } from 'typeorm';
@@ -44,7 +43,7 @@ export class BarberShop extends BaseCollection {
 
   @ApiProperty({ type: () => User })
   @IsNotEmpty()
-  @ManyToOne(() => User, (user) => user.barbershops)
+  @OneToMany(() => User, (user) => user.barbershops)
   user: User;
 
   @ApiProperty({ type: () => Scheduling })

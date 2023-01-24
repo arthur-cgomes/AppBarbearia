@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, ILike, In, Repository } from 'typeorm';
 import { Notification } from '../notification/entity/notification.entity';
@@ -39,7 +35,7 @@ export class UserNotificationService {
     });
 
     if (!usernotification)
-      throw new BadRequestException('user notification not found');
+      throw new NotFoundException('user notification not found');
 
     return await (
       await this.userNotificationRepository.preload({
