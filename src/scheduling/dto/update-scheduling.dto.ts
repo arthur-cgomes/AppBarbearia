@@ -8,6 +8,10 @@ export class UpdateSchedulingDto {
 
   @ApiProperty()
   @IsOptional()
+  barberId: string;
+
+  @ApiProperty()
+  @IsOptional()
   serviceId: string;
 
   @ApiProperty()

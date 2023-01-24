@@ -7,6 +7,7 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   OneToOne,
 } from 'typeorm';
 import { BaseCollection } from '../../common/entity/base.entity';
@@ -48,7 +49,7 @@ export class BarberShop extends BaseCollection {
 
   @ApiProperty({ type: () => Scheduling })
   @IsNotEmpty()
-  @ManyToOne(() => Scheduling, (scheduling) => scheduling.barbershops)
+  @OneToMany(() => Scheduling, (scheduling) => scheduling.barbershops)
   scheduling: Scheduling;
 
   @ApiProperty()
