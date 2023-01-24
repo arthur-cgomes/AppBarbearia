@@ -1,7 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { User } from '../../user/entity/user.entity';
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToOne } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 import { BaseCollection } from '../../common/entity/base.entity';
 import { Scheduling } from '../../scheduling/entity/scheduling.entity';
 import { Barber } from 'src/barber/entity/barber.entity';
