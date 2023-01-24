@@ -69,7 +69,7 @@ export class User extends BaseCollection {
   services: Service[];
 
   @ApiProperty({ type: () => Scheduling })
-  @OneToMany(() => Scheduling, (scheduling) => scheduling.users)
+  @OneToMany(() => Scheduling, (scheduling) => scheduling.user)
   schedulings: Scheduling[];
 
   @BeforeInsert()

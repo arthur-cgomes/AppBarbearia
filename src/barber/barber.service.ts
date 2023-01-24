@@ -60,7 +60,7 @@ export class BarberService {
     ).save();
   }
 
-  public async getBarberbyId(barberId: string): Promise<Barber> {
+  public async getBarberById(barberId: string): Promise<Barber> {
     const barber = await this.barberRepository.findOne({
       where: [{ id: barberId }],
     });

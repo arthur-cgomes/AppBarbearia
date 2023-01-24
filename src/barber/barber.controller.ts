@@ -64,8 +64,8 @@ export class BarberController {
   })
   @ApiCreatedResponse({ type: BarberDto })
   @ApiNotFoundResponse({ description: 'Barbeiro não encontrado' })
-  async getBarberbyId(@Param('barberId') barberId: string) {
-    return await this.barberService.getBarberbyId(barberId);
+  async getBarberById(@Param('barberId') barberId: string) {
+    return await this.barberService.getBarberById(barberId);
   }
 
   @Get()

@@ -3,6 +3,7 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 import { BaseCollection } from '../../common/entity/base.entity';
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToOne } from 'typeorm';
+import { Scheduling } from '../../scheduling/entity/scheduling.entity';
 
 @Entity()
 export class Barber extends BaseCollection {
@@ -27,9 +28,12 @@ export class Barber extends BaseCollection {
   phone: string;
 
   @ApiProperty({ type: () => BarberShop })
-  @IsNotEmpty()
-  @OneToOne(() => BarberShop, (barbershop) => barbershop.barbers)
-  barbershops: BarberShop;
+  @OneToOne(() => BarberShop, (barbershop) => barbershop.barber)
+  barbershop: BarberShop;
+
+  @ApiProperty({ type: () => Scheduling })
+  @OneToOne(() => Scheduling, (scheduling) => scheduling.barber)
+  scheduling: Scheduling;
 
   @BeforeInsert()
   @BeforeUpdate()

@@ -99,7 +99,7 @@ describe('BarberService', () => {
     //  expect(repositoryMock.create).not.toHaveBeenCalled();
     //});
 
-    describe('updateBarberShop', () => {
+    describe('updateBarber', () => {
       const updateBarberDto: UpdateBarberDto = {
         name: 'name',
         email: 'email',
@@ -194,25 +194,41 @@ describe('BarberService', () => {
         expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
       });
 
-      describe('deleteBarber', () => {
-        it('Should successfully delete a barber', async () => {
-          repositoryMock.findOne = jest.fn().mockReturnValue(barber);
-          repositoryMock.remove = jest.fn();
+      it('Should successfully return an empty list of barbers', async () => {
+        const take = 10;
+        const skip = 10;
+        const conditions: FindManyOptions<Barber> = {
+          take,
+          skip,
+        };
 
-          const result = await service.deleteBarber(barber.id);
+        repositoryMock.findAndCount = jest.fn().mockReturnValue([[], 0]);
 
-          expect(result).toStrictEqual('removed');
-        });
+        const result = await service.getAllBarbers(take, skip, null);
 
-        it('Should throw a NotFoundException if barber does not exist', async () => {
-          const error = new NotFoundException('barber not found');
+        expect(result).toStrictEqual({ skip: null, total: 0, barbers: [] });
+        expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+      });
+    });
 
-          repositoryMock.findOne = jest.fn();
+    describe('deleteBarber', () => {
+      it('Should successfully delete a barber', async () => {
+        repositoryMock.findOne = jest.fn().mockReturnValue(barber);
+        repositoryMock.remove = jest.fn();
 
-          await expect(service.deleteBarber(barber.id)).rejects.toStrictEqual(
-            error,
-          );
-        });
+        const result = await service.deleteBarber(barber.id);
+
+        expect(result).toStrictEqual('removed');
+      });
+
+      it('Should throw a NotFoundException if barber does not exist', async () => {
+        const error = new NotFoundException('barber not found');
+
+        repositoryMock.findOne = jest.fn();
+
+        await expect(service.deleteBarber(barber.id)).rejects.toStrictEqual(
+          error,
+        );
       });
     });
   });
