@@ -21,21 +21,20 @@ export class BarberService {
     const cpf = await this.barberRepository.findOne({
       where: [{ cpf: createBarberDto.cpf }],
     });
-    if (cpf) {
-      throw new ConflictException('barber already exists');
-    }
 
     const email = await this.barberRepository.findOne({
       where: [{ email: createBarberDto.email }],
     });
-    if (email) {
-      throw new ConflictException('email already exists');
-    }
 
     const phone = await this.barberRepository.findOne({
       where: [{ phone: createBarberDto.phone }],
     });
-    if (phone) {
+
+    if (cpf) {
+      throw new ConflictException('barber already exists');
+    } else if (email) {
+      throw new ConflictException('email already exists');
+    } else if (phone) {
       throw new ConflictException('phone already exists');
     }
 

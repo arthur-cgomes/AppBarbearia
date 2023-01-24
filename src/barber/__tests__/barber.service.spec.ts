@@ -74,11 +74,11 @@ describe('BarberService', () => {
       expect(repositoryMock.create).not.toHaveBeenCalled();
     });
 
-    //Teste email
+    //  //Teste email
     //  it('Should throw a ConflictException if email already exists', async () => {
     //    const error = new ConflictException('email already exists');
-    //
-    //    repositoryMock.findOne = jest.fn().mockReturnValue(barber);
+    //    
+    //    repositoryMock.findOne = jest.fn().mockReturnValue(createBarberDto);
     //
     //    await expect(service.createBarber(createBarberDto)).rejects.toStrictEqual(
     //      error,
@@ -132,11 +132,11 @@ describe('BarberService', () => {
       });
     });
 
-    describe('getBarberbyId', () => {
+    describe('getBarberById', () => {
       it('Should successfully get a barber by id', async () => {
         repositoryMock.findOne = jest.fn().mockReturnValue(barber);
 
-        const result = await service.getBarberbyId(barber.id);
+        const result = await service.getBarberById(barber.id);
 
         expect(result).toStrictEqual(barber);
       });
@@ -146,7 +146,7 @@ describe('BarberService', () => {
 
         repositoryMock.findOne = jest.fn();
 
-        await expect(service.getBarberbyId(barber.id)).rejects.toStrictEqual(
+        await expect(service.getBarberById(barber.id)).rejects.toStrictEqual(
           error,
         );
       });
