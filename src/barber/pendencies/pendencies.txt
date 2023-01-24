@@ -1,0 +1,1 @@
+=> Finailizar o teste unitario do 'createBarber' e conferir se passou tudo com 100%
