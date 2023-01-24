@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import { BarberShop } from 'src/barber-shop/entity/barber-shop.entity';
-import { BaseCollection } from 'src/common/entity/base.entity';
+import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
+import { BaseCollection } from '../../common/entity/base.entity';
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToOne } from 'typeorm';
 
 @Entity()

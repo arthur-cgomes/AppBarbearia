@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { BaseCollection } from '../../common/entity/base.entity';
 import { Scheduling } from '../../scheduling/entity/scheduling.entity';
-import { Barber } from 'src/barber/entity/barber.entity';
+import { Barber } from '../../barber/entity/barber.entity';
 
 @Entity()
 export class BarberShop extends BaseCollection {
