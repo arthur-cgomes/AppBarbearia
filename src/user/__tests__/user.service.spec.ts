@@ -79,6 +79,7 @@ describe('UserService', () => {
       name: 'Arthur Gomes',
       birthDate: new Date(),
       phone: '(99)12341-4444',
+      email: 'email',
     };
 
     it('Should successfully update a user', async () => {
