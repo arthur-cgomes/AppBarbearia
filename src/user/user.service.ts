@@ -34,7 +34,7 @@ export class UserService {
 
     return user;
   }
-  
+
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
     const checkUser = await this.userRepository.findOne({
       where: [{ email: createUserDto.email }],
