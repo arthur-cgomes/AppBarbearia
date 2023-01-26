@@ -1,2 +1,2 @@
 => Finalizar o teste unitario.
-=> Uncovered Line 33,40,47,54,66
+=> Uncovered Line 33,40,47,54

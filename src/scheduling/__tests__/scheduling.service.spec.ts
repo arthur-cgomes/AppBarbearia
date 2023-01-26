@@ -117,6 +117,7 @@ describe('SchedulingService', () => {
     barber,
     services,
   } as Scheduling;
+  
   describe('createScheduling', () => {
     const createSchedulingDto: CreateSchedulingDto = {
       userId: 'userId',

@@ -142,7 +142,7 @@ describe('BarberShopService', () => {
     });
   });
 
-  describe('getAllBarbaerShops', () => {
+  describe('getAllBarberShops', () => {
     it('Should successfully get all barbershops', async () => {
       const take = 1;
       const skip = 0;
