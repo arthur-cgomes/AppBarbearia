@@ -25,7 +25,6 @@ import { ConflictException } from '@nestjs/common/exceptions';
 describe('SchedulingService', () => {
   let service: SchedulingService;
   let userService: UserService;
-  let userTypeService: UserTypeService;
   let barberShopService: BarberShopService;
   let barberService: BarberService;
   let servicesService: ServicesService;
@@ -70,7 +69,6 @@ describe('SchedulingService', () => {
 
     service = module.get<SchedulingService>(SchedulingService);
     userService = module.get<UserService>(UserService);
-    userTypeService = module.get<UserTypeService>(UserTypeService);
     barberShopService = module.get<BarberShopService>(BarberShopService);
     barberService = module.get<BarberService>(BarberService);
     servicesService = module.get<ServicesService>(ServicesService);
@@ -117,7 +115,7 @@ describe('SchedulingService', () => {
     barber,
     services,
   } as Scheduling;
-  
+
   describe('createScheduling', () => {
     const createSchedulingDto: CreateSchedulingDto = {
       userId: 'userId',
