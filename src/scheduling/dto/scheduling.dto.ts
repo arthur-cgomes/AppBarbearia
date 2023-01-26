@@ -5,4 +5,5 @@ export class SchedulingDto extends OmitType(Scheduling, [
   'user',
   'barbershops',
   'services',
+  'barber',
 ]) {}
