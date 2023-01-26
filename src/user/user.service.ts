@@ -1,9 +1,10 @@
 import {
   ConflictException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BadRequestException } from '@nestjs/common/exceptions';
+import { BadRequestException, HttpException } from '@nestjs/common/exceptions';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserTypeService } from '../user-type/user-type.service';
 import { FindManyOptions, In, Repository } from 'typeorm';
@@ -11,7 +12,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { GetAllUsersResponseDto } from './dto/get-all-user-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entity/user.entity';
-import { UpdateManyToManyDto } from 'src/common/dto/update-many-to-many.dto';
+import { UpdateManyToManyDto } from '../common/dto/update-many-to-many.dto';
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,20 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
+  async checkUserToLogin(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'password'],
+    });
+    if (!user)
+      throw new HttpException(
+        'user with this email not found',
+        HttpStatus.NOT_FOUND,
+      );
+
+    return user;
+  }
+  
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
     const checkUser = await this.userRepository.findOne({
       where: [{ email: createUserDto.email }],
