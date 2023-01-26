@@ -31,7 +31,7 @@ import { NotificationService } from './notification.service';
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
-  @Post()
+  @Post(':id')
   @ApiOperation({
     summary: 'Cria uma notificação',
   })

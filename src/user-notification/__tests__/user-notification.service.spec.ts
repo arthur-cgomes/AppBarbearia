@@ -11,7 +11,7 @@ import {
 } from '../../utils/mock/test.util';
 import { UserNotification } from '../entity/user-notification.entity';
 import { UserNotificationService } from '../user-notification.service';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 describe('UserNotificationService', () => {
   let service: UserNotificationService;
@@ -105,8 +105,8 @@ describe('UserNotificationService', () => {
       });
     });
 
-    it('Should throw the BadRequestException exception when user notification not found', async () => {
-      const error = new BadRequestException('user notification not found');
+    it('Should throw the NotFoundException exception when user notification not found', async () => {
+      const error = new NotFoundException('user notification not found');
 
       repositoryMock.findOne = jest.fn();
 

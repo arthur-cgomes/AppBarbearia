@@ -13,11 +13,22 @@ import { BarberShopService } from '../../barber-shop/barber-shop.service';
 import { ServicesService } from '../../services/services.service';
 import { User } from '../../user/entity/user.entity';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
-import { Service } from '../../services/entity/services.entity';
+import { Services } from '../../services/entity/services.entity';
 import { UpdateSchedulingDto } from '../dto/update-scheduling.dto';
+import { Barber } from '../../barber/entity/barber.entity';
+import { CreateSchedulingDto } from '../dto/create-scheduling.dto';
+import { BarberService } from '../../barber/barber.service';
+import { UserTypeService } from '../../user-type/user-type.service';
+import { UserType } from '../../user-type/entity/user-type.entity';
+import { ConflictException } from '@nestjs/common/exceptions';
 
 describe('SchedulingService', () => {
   let service: SchedulingService;
+  let userService: UserService;
+  let userTypeService: UserTypeService;
+  let barberShopService: BarberShopService;
+  let barberService: BarberService;
+  let servicesService: ServicesService;
 
   let repositoryMock: MockRepository<Repository<Scheduling>>;
 
@@ -34,27 +45,42 @@ describe('SchedulingService', () => {
           provide: getRepositoryToken(User),
           useValue: repositoryMockFactory<User>(),
         },
+        UserTypeService,
+        {
+          provide: getRepositoryToken(UserType),
+          useValue: repositoryMockFactory<UserType>(),
+        },
         BarberShopService,
         {
           provide: getRepositoryToken(BarberShop),
           useValue: repositoryMockFactory<BarberShop>(),
         },
+        BarberService,
+        {
+          provide: getRepositoryToken(Barber),
+          useValue: repositoryMockFactory<Barber>(),
+        },
         ServicesService,
         {
-          provide: getRepositoryToken(Service),
-          useValue: repositoryMockFactory<Service>(),
+          provide: getRepositoryToken(Services),
+          useValue: repositoryMockFactory<Services>(),
         },
       ],
     }).compile();
 
     service = module.get<SchedulingService>(SchedulingService);
+    userService = module.get<UserService>(UserService);
+    userTypeService = module.get<UserTypeService>(UserTypeService);
+    barberShopService = module.get<BarberShopService>(BarberShopService);
+    barberService = module.get<BarberService>(BarberService);
+    servicesService = module.get<ServicesService>(ServicesService);
 
     repositoryMock = module.get(getRepositoryToken(Scheduling));
   });
 
   beforeEach(() => jest.clearAllMocks());
 
-  const users: User = {
+  const user: User = {
     id: '12313123-123123a-abcde',
     email: 'email@teste.com.br',
     name: 'Arthur Gomes',
@@ -68,55 +94,143 @@ describe('SchedulingService', () => {
     active: true,
   } as BarberShop;
 
-  const services: Service = {
+  const barber: Barber = {
+    id: '12314-121454-ç687ih',
+    name: 'name',
+    cpf: 'cpf',
+    email: 'email',
+    phone: 'phone',
+  } as Barber;
+
+  const services: Services = {
     id: 'e2f390e3-f989-4abd-9a6f-e7679d6d9278',
     name: 'name',
     type: 'type',
     value: 'value',
-  } as Service;
+  } as Services;
 
   const scheduling: Scheduling = {
+    id: '12314-121454-ç687ih',
     date: new Date(),
-    users,
+    user,
     barbershops,
+    barber,
     services,
   } as Scheduling;
+  
+  describe('createScheduling', () => {
+    const createSchedulingDto: CreateSchedulingDto = {
+      userId: 'userId',
+      barberShopId: 'barberShopId',
+      barberId: 'barberId',
+      serviceId: 'serviceId',
+      date: new Date(),
+    };
 
-  //describe('createScheduling', () => {
-  //  const createSchedulingDto: CreateSchedulingDto = {
-  //    userId: 'users.id',
-  //    barberShopId: 'barbershops.id',
-  //    serviceId: 'services.id',
-  //    date: new Date(),
-  //  };
-  //
-  //  it('Should successfully create a scheduling', async () => {
-  //    repositoryMock.findOne = jest.fn();
-  //    repositoryMock.create = jest.fn().mockReturnValue({ save: () => scheduling });
-  //
-  //    const result = await service.createScheduling(createSchedulingDto);
-  //
-  //    expect(result).toStrictEqual(scheduling);
-  //    expect(repositoryMock.create).toHaveBeenCalledWith({
-  //      ...createSchedulingDto
-  //    });
-  //  });
-  //
-  //  it('Should throw the NotFoundException exception when user not found', async () => {
-  //    const error = new NotFoundException('user not found');
-  //
-  //    repositoryMock.findOne = jest.fn().mockReturnValue(null);
-  //
-  //    await expect(
-  //      service.createScheduling(createSchedulingDto),
-  //    ).rejects.toStrictEqual(error);
-  //    expect(repositoryMock.create).not.toHaveBeenCalled();
-  //  });
-  //});
+    it('Should successfully create a scheduling', async () => {
+      repositoryMock.findOne = jest.fn();
+      repositoryMock.create = jest
+        .fn()
+        .mockReturnValue({ save: () => scheduling });
 
+      jest.spyOn(userService, 'getUserById').mockResolvedValue(user);
+      jest
+        .spyOn(barberShopService, 'getBarberShopById')
+        .mockResolvedValue(barbershops);
+      jest.spyOn(barberService, 'getBarberById').mockResolvedValue(barber);
+      jest.spyOn(servicesService, 'getServiceById').mockResolvedValue(services);
+
+      const result = await service.createScheduling(createSchedulingDto);
+
+      expect(result).toEqual(scheduling);
+      expect(repositoryMock.create).toHaveBeenCalledWith({
+        ...createSchedulingDto,
+        user,
+        barbershops,
+        barber,
+        services,
+      });
+    });
+
+    it('Should throw the NotFoundException exception when user not found', async () => {
+      const error = new NotFoundException('user not found');
+
+      repositoryMock.findOne = jest.fn();
+
+      jest.spyOn(userService, 'getUserById').mockRejectedValue(error);
+
+      await expect(
+        service.createScheduling(createSchedulingDto),
+      ).rejects.toStrictEqual(error);
+      expect(repositoryMock.create).not.toHaveBeenCalled();
+    });
+
+    it('Should throw the NotFoundException exception when barbershop not found', async () => {
+      const error = new NotFoundException('barbershop not found');
+
+      repositoryMock.findOne = jest.fn();
+
+      jest.spyOn(userService, 'getUserById').mockResolvedValue(user);
+      jest
+        .spyOn(barberShopService, 'getBarberShopById')
+        .mockRejectedValue(error);
+
+      await expect(
+        service.createScheduling(createSchedulingDto),
+      ).rejects.toStrictEqual(error);
+      expect(repositoryMock.create).not.toHaveBeenCalled();
+    });
+
+    it('Should throw the NotFoundException exception when barber not found', async () => {
+      const error = new NotFoundException('barber not found');
+
+      repositoryMock.findOne = jest.fn();
+
+      jest.spyOn(userService, 'getUserById').mockResolvedValue(user);
+      jest
+        .spyOn(barberShopService, 'getBarberShopById')
+        .mockResolvedValue(barbershops);
+      jest.spyOn(barberService, 'getBarberById').mockRejectedValue(error);
+
+      await expect(
+        service.createScheduling(createSchedulingDto),
+      ).rejects.toStrictEqual(error);
+      expect(repositoryMock.create).not.toHaveBeenCalled();
+    });
+
+    it('Should throw the NotFoundException exception when service not found', async () => {
+      const error = new NotFoundException('service not found');
+
+      repositoryMock.findOne = jest.fn();
+
+      jest.spyOn(userService, 'getUserById').mockResolvedValue(user);
+      jest
+        .spyOn(barberShopService, 'getBarberShopById')
+        .mockResolvedValue(barbershops);
+      jest.spyOn(barberService, 'getBarberById').mockResolvedValue(barber);
+      jest.spyOn(servicesService, 'getServiceById').mockRejectedValue(error);
+
+      await expect(
+        service.createScheduling(createSchedulingDto),
+      ).rejects.toStrictEqual(error);
+      expect(repositoryMock.create).not.toHaveBeenCalled();
+    });
+
+    it('Should throw the ConflictException exception when scheduling time not available', async () => {
+      const error = new ConflictException('time not available');
+
+      repositoryMock.findOne = jest.fn().mockReturnValue(scheduling);
+
+      await expect(
+        service.createScheduling(createSchedulingDto),
+      ).rejects.toStrictEqual(error);
+      expect(repositoryMock.create).not.toHaveBeenCalled();
+    });
+  });
   describe('updateScheduling', () => {
     const updateSchedulingDto: UpdateSchedulingDto = {
       barberShopId: 'barbershops.id',
+      barberId: 'barbers.id',
       serviceId: 'services.id',
       date: new Date(),
     };

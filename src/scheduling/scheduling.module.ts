@@ -7,11 +7,13 @@ import { UserModule } from '../user/user.module';
 import { BarberShopModule } from '../barber-shop/barber-shop.module';
 import { ServicesModule } from '../services/services.module';
 import { BarberModule } from 'src/barber/barber.module';
+import { UserTypeModule } from 'src/user-type/user-type.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Scheduling]),
     UserModule,
+    UserTypeModule,
     BarberShopModule,
     BarberModule,
     ServicesModule,

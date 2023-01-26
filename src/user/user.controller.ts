@@ -18,9 +18,11 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { DeleteResponseDto } from 'src/common/dto/delete-response.dto';
+import { DeleteResponseDto } from '../common/dto/delete-response.dto';
+import { UpdateManyToManyDto } from '../common/dto/update-many-to-many.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetAllUsersResponseDto } from './dto/get-all-user-response.dto';
+import { UpdateUserUserTypeDto } from './dto/update-user-user-type-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
@@ -56,6 +58,22 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return await this.userService.updateUser(userId, updateUserDto);
+  }
+
+  @Put('user-types/:userId')
+  @ApiOperation({
+    summary: 'Atualiza os tipos de usuário',
+  })
+  @ApiOkResponse({ type: UpdateUserUserTypeDto })
+  @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
+  @ApiBadRequestResponse({
+    description: 'Dados inválidos',
+  })
+  async updateUserType(
+    @Param('userId') userId: string,
+    @Body() updateManyToManyDto: UpdateManyToManyDto,
+  ) {
+    return await this.userService.updateUserType(userId, updateManyToManyDto);
   }
 
   @Get(':userId')
