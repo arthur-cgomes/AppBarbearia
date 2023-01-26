@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, ILike, In, Repository } from 'typeorm';
 import { CreateBarberShopDto } from './dto/create-barbershop.dto';
+import { GetAllBarberShopResponseDto } from './dto/get-all-barbershop.dto';
 import { UpdateBarberShopDto } from './dto/update-barbershop.dto';
 import { BarberShop } from './entity/barber-shop.entity';
 
@@ -62,11 +63,7 @@ export class BarberShopService {
     skip: number,
     barbershopId: string,
     search?: string,
-  ): Promise<{
-    skip: number;
-    total: number;
-    barbershops: BarberShop[];
-  }> {
+  ): Promise<GetAllBarberShopResponseDto> {
     const conditions: FindManyOptions<BarberShop> = {
       take,
       skip,

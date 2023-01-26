@@ -9,5 +9,5 @@ export class GetAllBarberShopResponseDto {
   skip: number;
 
   @ApiProperty({ type: BarberShop, isArray: true })
-  barbershop: BarberShop[];
+  barbershops: BarberShop[];
 }
