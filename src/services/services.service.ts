@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, ILike, In, Repository } from 'typeorm';
+import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { CreateServiceDto } from './dto/create-services.dto';
 import { GetAllServicesResponseDto } from './dto/get-all-services.dto';
 import { UpdateServiceDto } from './dto/update-services.dto';

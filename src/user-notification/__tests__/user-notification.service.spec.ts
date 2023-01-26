@@ -11,7 +11,7 @@ import {
 } from '../../utils/mock/test.util';
 import { UserNotification } from '../entity/user-notification.entity';
 import { UserNotificationService } from '../user-notification.service';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 describe('UserNotificationService', () => {
   let service: UserNotificationService;
