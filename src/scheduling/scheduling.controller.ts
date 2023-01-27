@@ -8,6 +8,8 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common/decorators';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -32,6 +34,7 @@ import { SchedulingService } from './scheduling.service';
 export class SchedulingController {
   constructor(private readonly schedulingService: SchedulingService) {}
 
+  @UseGuards(AuthGuard())
   @Post()
   @ApiOperation({
     summary: 'Agenda um horário',
@@ -42,6 +45,7 @@ export class SchedulingController {
     return await this.schedulingService.createScheduling(createSchedulingDto);
   }
 
+  @UseGuards(AuthGuard())
   @Put(':schedulingId')
   @ApiOperation({
     summary: 'Atualiza um horário',
@@ -63,6 +67,7 @@ export class SchedulingController {
     );
   }
 
+  @UseGuards(AuthGuard())
   @Get(':schedulingId')
   @ApiOperation({
     summary: 'Busca um horário pelo id',
@@ -75,6 +80,7 @@ export class SchedulingController {
     return await this.schedulingService.getSchedulingById(schedulingId);
   }
 
+  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todos os horários',
@@ -98,6 +104,7 @@ export class SchedulingController {
     );
   }
 
+  @UseGuards(AuthGuard())
   @Delete(':schedulingId')
   @ApiOperation({
     summary: 'Exclui um horário',

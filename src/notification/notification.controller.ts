@@ -8,6 +8,8 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common/decorators';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -31,6 +33,7 @@ import { NotificationService } from './notification.service';
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
+  @UseGuards(AuthGuard())
   @Post(':id')
   @ApiOperation({
     summary: 'Cria uma notificação',
@@ -46,6 +49,7 @@ export class NotificationController {
     );
   }
 
+  @UseGuards(AuthGuard())
   @Put(':id')
   @ApiOperation({
     summary: 'Atualiza uma notificação',
@@ -65,6 +69,7 @@ export class NotificationController {
     );
   }
 
+  @UseGuards(AuthGuard())
   @Get(':id')
   @ApiOperation({
     summary: 'Retorna uma notificação pelo id',
@@ -75,6 +80,7 @@ export class NotificationController {
     return await this.notificationService.getNotificationById(id);
   }
 
+  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todas as notificações',
@@ -98,6 +104,7 @@ export class NotificationController {
     );
   }
 
+  @UseGuards(AuthGuard())
   @Delete(':id')
   @ApiOperation({
     summary: 'Exclui uma notificação',

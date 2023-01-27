@@ -8,10 +8,13 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common/decorators';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiConflictResponse,
+  ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -31,11 +34,12 @@ import { ServicesService } from './services.service';
 export class ServicesController {
   constructor(private readonly servicesService: ServicesService) {}
 
+  @UseGuards(AuthGuard())
   @Post()
   @ApiOperation({
     summary: 'Cria um serviço',
   })
-  //@ApiCreatedResponse({ type: InstitutionDto })
+  @ApiCreatedResponse({ type: ServicesDto })
   @ApiConflictResponse({
     description: 'Serviço com esse nome já existe',
   })
@@ -43,6 +47,7 @@ export class ServicesController {
     return await this.servicesService.createService(createServiceDto);
   }
 
+  @UseGuards(AuthGuard())
   @Put(':id')
   @ApiOperation({
     summary: 'Atualiza um serviço',
@@ -59,6 +64,7 @@ export class ServicesController {
     return await this.servicesService.updateService(id, updateServiceDto);
   }
 
+  @UseGuards(AuthGuard())
   @Get(':id')
   @ApiOperation({
     summary: 'Retorna um serviço pelo id',
@@ -69,6 +75,7 @@ export class ServicesController {
     return await this.servicesService.getServiceById(id);
   }
 
+  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todos os serviços',
@@ -92,6 +99,7 @@ export class ServicesController {
     );
   }
 
+  @UseGuards(AuthGuard())
   @Delete(':serviceId')
   @ApiOperation({
     summary: 'Exclui um serviço',

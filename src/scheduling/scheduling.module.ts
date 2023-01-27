@@ -8,10 +8,12 @@ import { BarberShopModule } from '../barber-shop/barber-shop.module';
 import { ServicesModule } from '../services/services.module';
 import { BarberModule } from 'src/barber/barber.module';
 import { UserTypeModule } from 'src/user-type/user-type.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Scheduling]),
+    PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     UserModule,
     UserTypeModule,
     BarberShopModule,
