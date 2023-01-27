@@ -1,4 +1,6 @@
 import { Controller, Get, Param, Patch, Query } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common/decorators';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiNotFoundResponse,
@@ -19,6 +21,7 @@ export class UserNotificationController {
     private readonly userNotificationService: UserNotificationService,
   ) {}
 
+  @UseGuards(AuthGuard())
   @Get(':id')
   @ApiOperation({
     summary: 'Retorna uma notificação do usuário pelo id',
@@ -31,6 +34,7 @@ export class UserNotificationController {
     return await this.userNotificationService.getUserNotificationById(id);
   }
 
+  @UseGuards(AuthGuard())
   @Patch(':id/read')
   @ApiOperation({
     summary: 'Atualiza a notificação para lida',
@@ -43,6 +47,7 @@ export class UserNotificationController {
     return await this.userNotificationService.updateUserNotificationRead(id);
   }
 
+  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todas as notificações de um usuário',

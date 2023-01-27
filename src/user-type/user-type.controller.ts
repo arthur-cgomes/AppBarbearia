@@ -8,6 +8,8 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common/decorators';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -32,6 +34,7 @@ import { UserTypeService } from './user-type.service';
 export class UserTypeController {
   constructor(private readonly usertypeService: UserTypeService) {}
 
+  @UseGuards(AuthGuard())
   @Post()
   @ApiOperation({
     summary: 'Cria um tipo de usuário',
@@ -44,6 +47,7 @@ export class UserTypeController {
     return await this.usertypeService.createUserType(createUserTypeDto);
   }
 
+  @UseGuards(AuthGuard())
   @Put(':id')
   @ApiOperation({
     summary: 'Atualiza um tipo de usuário',
@@ -60,6 +64,7 @@ export class UserTypeController {
     return await this.usertypeService.updateUserType(id, updateUserUserTypeDto);
   }
 
+  @UseGuards(AuthGuard())
   @Get(':id')
   @ApiOperation({
     summary: 'Retorna um tipo de usuário pelo id',
@@ -70,6 +75,7 @@ export class UserTypeController {
     return await this.usertypeService.getUserTypeById(id);
   }
 
+  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todos os tipos usuários',
@@ -86,6 +92,7 @@ export class UserTypeController {
     return await this.usertypeService.getAllUserType(take, skip, search);
   }
 
+  @UseGuards(AuthGuard())
   @Delete(':id')
   @ApiOperation({
     summary: 'Exclui um tipo de usuário',

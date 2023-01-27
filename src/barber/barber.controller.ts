@@ -8,6 +8,8 @@ import {
   Get,
   Query,
 } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common/decorators';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -32,6 +34,7 @@ import { UpdateBarberDto } from './dto/update-barber.dto';
 export class BarberController {
   constructor(private readonly barberService: BarberService) {}
 
+  @UseGuards(AuthGuard())
   @Post()
   @ApiOperation({
     summary: 'Adiona um novo barbeiro',
@@ -44,6 +47,7 @@ export class BarberController {
     return await this.barberService.createBarber(createBarberDto);
   }
 
+  @UseGuards(AuthGuard())
   @Put(':barberId')
   @ApiOperation({
     summary: 'Atualiza um barbeiro',
@@ -60,6 +64,7 @@ export class BarberController {
     return await this.barberService.updateBarber(barberId, updateBarberDto);
   }
 
+  @UseGuards(AuthGuard())
   @Get(':barberId')
   @ApiOperation({
     summary: 'Retorna um barbeiro pelo id',
@@ -70,6 +75,7 @@ export class BarberController {
     return await this.barberService.getBarberById(barberId);
   }
 
+  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todos os barbeiros',
@@ -86,6 +92,7 @@ export class BarberController {
     return await this.barberService.getAllBarbers(take, skip, barberId);
   }
 
+  @UseGuards(AuthGuard())
   @Delete(':barberId')
   @ApiOperation({
     summary: 'Exclui um barbeiro',

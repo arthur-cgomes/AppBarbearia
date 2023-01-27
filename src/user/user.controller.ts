@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -47,6 +48,7 @@ export class UserController {
     return await this.userService.createUser(createUserDto);
   }
 
+  @UseGuards(AuthGuard())
   @Put(':userId')
   @ApiOperation({
     summary: 'Atualiza um usuário',
@@ -63,6 +65,7 @@ export class UserController {
     return await this.userService.updateUser(userId, updateUserDto);
   }
 
+  @UseGuards(AuthGuard())
   @Put('user-types/:userId')
   @ApiOperation({
     summary: 'Atualiza os tipos de usuário',
@@ -79,6 +82,7 @@ export class UserController {
     return await this.userService.updateUserType(userId, updateManyToManyDto);
   }
 
+  @UseGuards(AuthGuard())
   @Get(':userId')
   @ApiOperation({
     summary: 'Retorna um usuário pelo id',
@@ -89,6 +93,7 @@ export class UserController {
     return await this.userService.getUserById(userId);
   }
 
+  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todos usuários',
@@ -105,6 +110,7 @@ export class UserController {
     return await this.userService.getAllUsers(take, skip, userId);
   }
 
+  @UseGuards(AuthGuard())
   @Delete(':userId')
   @ApiOperation({
     summary: 'Exclui um usuário',
