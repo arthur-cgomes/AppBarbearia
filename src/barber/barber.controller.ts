@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -25,6 +26,7 @@ import { CreateBarberDto } from './dto/create-barber.dto';
 import { GetAllBarbersResponseDto } from './dto/get-all-barber-response.dto';
 import { UpdateBarberDto } from './dto/update-barber.dto';
 
+@ApiBearerAuth()
 @ApiTags('Barber')
 @Controller('barbers')
 export class BarberController {

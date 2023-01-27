@@ -7,9 +7,11 @@ import {
   Get,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -27,6 +29,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
+@ApiBearerAuth()
 @ApiTags('User')
 @Controller('users')
 export class UserController {
