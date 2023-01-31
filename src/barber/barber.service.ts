@@ -18,24 +18,16 @@ export class BarberService {
   ) {}
 
   public async createBarber(createBarberDto: CreateBarberDto): Promise<Barber> {
-    const cpf = await this.barberRepository.findOne({
-      where: [{ cpf: createBarberDto.cpf }],
+    const barber = await this.barberRepository.findOne({
+      where: [
+        { cpf: createBarberDto.cpf },
+        { email: createBarberDto.email },
+        { phone: createBarberDto.phone },
+      ],
     });
 
-    const email = await this.barberRepository.findOne({
-      where: [{ email: createBarberDto.email }],
-    });
-
-    const phone = await this.barberRepository.findOne({
-      where: [{ phone: createBarberDto.phone }],
-    });
-
-    if (cpf) {
+    if (barber) {
       throw new ConflictException('barber already exists');
-    } else if (email) {
-      throw new ConflictException('email already exists');
-    } else if (phone) {
-      throw new ConflictException('phone already exists');
     }
 
     return await this.barberRepository.create({ ...createBarberDto }).save();

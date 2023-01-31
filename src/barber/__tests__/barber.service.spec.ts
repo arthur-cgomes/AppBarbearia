@@ -73,30 +73,6 @@ describe('BarberService', () => {
       );
       expect(repositoryMock.create).not.toHaveBeenCalled();
     });
-
-    //Verificar
-    it('Should throw a ConflictException if email already exists', async () => {
-      const error = new ConflictException('email already exists');
-
-      repositoryMock.findOne = jest.fn().mockRejectedValue(error);
-
-      await expect(service.createBarber(createBarberDto)).rejects.toStrictEqual(
-        error,
-      );
-      expect(repositoryMock.create).not.toHaveBeenCalled();
-    });
-
-    //Verificar
-    it('Should throw a ConflictException if phone already exists', async () => {
-      const error = new ConflictException('phone already exists');
-
-      repositoryMock.findOne = jest.fn().mockRejectedValue(error);
-
-      await expect(service.createBarber(createBarberDto)).rejects.toStrictEqual(
-        error,
-      );
-      expect(repositoryMock.create).not.toHaveBeenCalled();
-    });
   });
 
   describe('updateBarber', () => {
