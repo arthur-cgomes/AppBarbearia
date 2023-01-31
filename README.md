@@ -1,4 +1,4 @@
-# AppBarbearia
+# AppBarbearia💈
 
 ### Descrição:
 Esse projeto de estudo teve como objetivo reforçar meus conhecimentos como desenvolvedor back-end.
