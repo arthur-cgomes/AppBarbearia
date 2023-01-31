@@ -1,0 +1,4 @@
+App Barbearia:
+1- Verificar o 'deleteNotification' [Brenner]
+2- Teste únitario 'Agendamento'
+3- Realizar o deploy
