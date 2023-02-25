@@ -10,11 +10,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle(`AppBarbearia - ${process.env.NODE_ENV}`)
+    .setTitle(`AppBarbearia`)
     .setDescription('Back-end do projeto AppBarbearia')
     .setVersion(packageFile.version)
     .addBearerAuth()
-    .addTag('Back-end')
+    .addTag('Endpoints:')
     .build();
 
   app.useGlobalPipes(new ValidationPipe());

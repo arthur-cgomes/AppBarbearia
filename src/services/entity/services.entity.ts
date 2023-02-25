@@ -13,7 +13,7 @@ export class Services extends BaseCollection {
   name: string;
 
   @ApiProperty()
-  @Column({ name: 'service type', length: 50 })
+  @Column({ name: 'service_type', length: 50 })
   type: string;
 
   @ApiProperty()
