@@ -78,4 +78,4 @@ Nest is [MIT licensed](LICENSE).
 Nesse projeto de estudo teve como objetivo reforçar meus conhecimentos como desenvolvedor back-end.
 
 ### O que foi feito:
-Desenvolvi uma API utilizando Node.js e Express com as linguagens JavaScript e Typescript utilizando o framework NestJS, por ela é possível o usuário se cadastrar, realizar agendamentos, cancelamentos, mudanças de serviços ou barbearias entre outras funções. O projeto também conta com a utilização de autenticação de usuário (JWT e Passaport), Swagger (documentação), TypeORM e Jest (testes automatizados).
+Desenvolvi uma API REST utilizando Node.js e Express com as linguagens JavaScript e Typescript utilizando o framework NestJS, por ela é possível o usuário se cadastrar, realizar agendamentos, cancelamentos, mudanças de serviços ou barbearias entre outras funções. O projeto também conta com a utilização de autenticação de usuário (JWT e Passaport), Swagger (documentação), TypeORM e Jest (testes automatizados).
