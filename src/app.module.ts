@@ -1,24 +1,36 @@
 import { BarberShopModule } from './barber-shop/barber-shop.module';
 import { Module } from '@nestjs/common';
-import { ormConfig } from './ormconfig';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { config } from 'dotenv';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { UserTypeModule } from './user-type/user-type.module';
-import { NotificationModule } from './notification/notification.module';
-import { UserNotificationModule } from './user-notification/user-notification.module';
 import { ServicesModule } from './services/services.module';
 import { SchedulingModule } from './scheduling/scheduling.module';
 import { BarberModule } from './barber/barber.module';
 
+config();
+
 @Module({
   imports: [
-    TypeOrmModule.forRoot(ormConfig),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('TYPEORM_HOST'),
+        port: configService.get('TYPEORM_PORT'),
+        username: configService.get('TYPEORM_USERNAME'),
+        password: configService.get('TYPEORM_PASSWORD'),
+        database: configService.get('TYPEORM_DATABASE'),
+        autoLoadEntities: true,
+        synchronize: false,
+      }),
+    }),
     UserModule,
     AuthModule,
     UserTypeModule,
-    NotificationModule,
-    UserNotificationModule,
     BarberShopModule,
     ServicesModule,
     SchedulingModule,
