@@ -30,7 +30,7 @@ import { UserTypeService } from './user-type.service';
 
 @ApiBearerAuth()
 @ApiTags('User-type')
-@Controller('user-types')
+@Controller('user-type')
 export class UserTypeController {
   constructor(private readonly usertypeService: UserTypeService) {}
 
@@ -48,7 +48,7 @@ export class UserTypeController {
   }
 
   @UseGuards(AuthGuard())
-  @Put(':id')
+  @Put('/:userTypeId')
   @ApiOperation({
     summary: 'Atualiza um tipo de usuário',
   })
@@ -58,48 +58,61 @@ export class UserTypeController {
     description: 'Dados inválidos',
   })
   async updateUserType(
-    @Param('id') id: string,
+    @Param('userTypeId') userTypeId: string,
     @Body() updateUserUserTypeDto: UpdateUserUserTypeDto,
   ) {
-    return await this.usertypeService.updateUserType(id, updateUserUserTypeDto);
+    return await this.usertypeService.updateUserType(
+      userTypeId,
+      updateUserUserTypeDto,
+    );
   }
 
-  @UseGuards(AuthGuard())
-  @Get(':id')
+  @Get('/:userTypeId')
   @ApiOperation({
     summary: 'Retorna um tipo de usuário pelo id',
   })
   @ApiOkResponse({ type: UserTypeDto })
   @ApiNotFoundResponse({ description: 'Tipo de usuário não encontrado' })
-  async getUserTypeyId(@Param('id') id: string) {
-    return await this.usertypeService.getUserTypeById(id);
+  async getUserTypeyId(@Param('userTypeId') userTypeId: string) {
+    return await this.usertypeService.getUserTypeById(userTypeId);
   }
 
-  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todos os tipos usuários',
   })
   @ApiQuery({ name: 'take', required: false })
   @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'sort', required: false })
+  @ApiQuery({ name: 'order', required: false })
   @ApiQuery({ name: 'search', required: false })
   @ApiOkResponse({ type: GetAllUserTypesResponseDto })
-  async getAllUsersType(
+  async getAllUserTypes(
     @Query('take') take = 10,
     @Query('skip') skip = 0,
-    @Query('search') search?: string,
+    @Query('sort') sort = 'name',
+    @Query('order') order: 'ASC' | 'DESC' = 'ASC',
+    @Query('search') search: string,
   ) {
-    return await this.usertypeService.getAllUserType(take, skip, search);
+    return await this.usertypeService.getAllUserTypes(
+      take,
+      skip,
+      sort,
+      order,
+      search,
+    );
   }
 
   @UseGuards(AuthGuard())
-  @Delete(':id')
+  @Delete('/:userTypeId')
   @ApiOperation({
     summary: 'Exclui um tipo de usuário',
   })
   @ApiOkResponse({ type: DeleteResponseDto })
   @ApiNotFoundResponse({ description: 'Tipo de usuário não encontrado' })
-  async deleteUserTypeId(@Param('id') id: string) {
-    return { message: await this.usertypeService.deleteUserType(id) };
+  async deleteUserTypeById(@Param('userTypeId') userTypeId: string) {
+    return {
+      message: await this.usertypeService.deleteUserTypeById(userTypeId),
+    };
   }
 }

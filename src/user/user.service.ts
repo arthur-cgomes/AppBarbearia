@@ -1,13 +1,12 @@
 import {
+  BadRequestException,
   ConflictException,
-  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BadRequestException, HttpException } from '@nestjs/common/exceptions';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserTypeService } from '../user-type/user-type.service';
-import { FindManyOptions, In, Repository } from 'typeorm';
+import { FindManyOptions, ILike, In, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetAllUsersResponseDto } from './dto/get-all-user-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -26,18 +25,18 @@ export class UserService {
       where: { email },
       select: ['id', 'email', 'password'],
     });
-    if (!user)
-      throw new HttpException(
-        'user with this email not found',
-        HttpStatus.NOT_FOUND,
-      );
+
+    if (!user) throw new NotFoundException('user with this email not found');
 
     return user;
   }
 
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
     const checkUser = await this.userRepository.findOne({
-      where: [{ email: createUserDto.email }],
+      where: [
+        { email: createUserDto.email },
+        { document: createUserDto.document },
+      ],
     });
 
     if (checkUser) {
@@ -51,13 +50,7 @@ export class UserService {
     userId: string,
     updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: [{ id: userId }],
-    });
-
-    if (!user) {
-      throw new NotFoundException('user not found');
-    }
+    await this.getUserById(userId);
 
     return await (
       await this.userRepository.preload({
@@ -72,34 +65,36 @@ export class UserService {
     toAddOrRemoveDto: UpdateManyToManyDto,
   ): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: [{ id: userId }],
-      relations: ['userTypes'],
+      where: { id: userId },
+      relations: ['userType'],
     });
 
     if (!user) {
-      throw new NotFoundException('user with this externalId not found');
+      throw new NotFoundException('user with this id not found');
     }
 
-    const userTypesToAdd = await this.userTypeService.getUserTypesByIds(
-      toAddOrRemoveDto.toAdd,
-    );
+    if (toAddOrRemoveDto.toAdd.length > 0) {
+      const userTypeToAdd = await this.userTypeService.getUserTypeById(
+        toAddOrRemoveDto.toAdd[0],
+      );
 
-    if (userTypesToAdd.length !== toAddOrRemoveDto.toAdd.length)
-      throw new BadRequestException('toAdd list has some invalid id');
+      if (!userTypeToAdd) {
+        throw new BadRequestException('Invalid userType id');
+      }
 
-    user.userTypes = user.userTypes.concat(userTypesToAdd);
+      user.userType = userTypeToAdd;
+    }
 
-    user.userTypes = user.userTypes.filter(
-      ({ id: userTypeId }) =>
-        !toAddOrRemoveDto.toRemove.find((ut) => userTypeId == ut),
-    );
+    if (toAddOrRemoveDto.toRemove.length > 0) {
+      user.userType = null;
+    }
 
-    return await (await this.userRepository.preload(user)).save();
+    return await this.userRepository.save(user);
   }
 
   public async getUserById(userId: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: [{ id: userId }],
+      where: { id: userId },
     });
 
     if (!user) {
@@ -116,15 +111,22 @@ export class UserService {
   public async getAllUsers(
     take: number,
     skip: number,
-    userId: string,
+    sort: string,
+    order: 'ASC' | 'DESC',
+    search?: string,
   ): Promise<GetAllUsersResponseDto> {
     const conditions: FindManyOptions<User> = {
       take,
       skip,
+      order: {
+        [sort]: order,
+      },
     };
 
-    if (userId) {
-      conditions.where = { id: userId };
+    if (search) {
+      conditions.where = {
+        name: ILike(`%${search}%`),
+      };
     }
 
     const [users, count] = await this.userRepository.findAndCount(conditions);
@@ -138,13 +140,8 @@ export class UserService {
     return { skip, total: count, users };
   }
 
-  public async deleteUser(userId: string): Promise<string> {
-    const user = await this.userRepository.findOne({
-      where: [{ id: userId }],
-    });
-
-    if (!user) throw new NotFoundException('user with this id not found');
-
+  public async deleteUserById(userId: string): Promise<string> {
+    const user = await this.getUserById(userId);
     await this.userRepository.remove(user);
 
     return 'removed';

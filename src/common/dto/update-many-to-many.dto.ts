@@ -1,14 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString } from 'class-validator';
+import { IsArray } from 'class-validator';
 
 export class UpdateManyToManyDto {
-  @ApiProperty({ type: [String] })
+  @ApiProperty({
+    description: 'Usuários a adicionar',
+    type: [String],
+  })
   @IsArray()
-  @IsString({ each: true })
   toAdd: string[];
 
-  @ApiProperty({ type: [String] })
+  @ApiProperty({
+    description: 'Usuários a remover',
+    type: [String],
+  })
   @IsArray()
-  @IsString({ each: true })
   toRemove: string[];
 }

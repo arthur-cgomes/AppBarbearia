@@ -5,4 +5,5 @@ export class BarberShopDto extends OmitType(BarberShop, [
   'user',
   'scheduling',
   'barber',
+  'services',
 ]) {}

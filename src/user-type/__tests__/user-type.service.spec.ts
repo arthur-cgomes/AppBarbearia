@@ -1,15 +1,17 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { FindManyOptions, ILike, Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 import {
   MockRepository,
   repositoryMockFactory,
-} from '../../utils/mock/test.util';
+} from '../../common/mock/test.util';
 import { CreateUserTypeDto } from '../dto/create-user-type.dto';
 import { UpdateUserUserTypeDto } from '../dto/update-user-type.dto';
 import { UserType } from '../entity/user-type.entity';
 import { UserTypeService } from '../user-type.service';
+import { mockUserType } from './mocks/user-type.mock';
+import { UserTypeEnum } from '../../common/enum/user-type.enum';
 
 describe('UserTypeService', () => {
   let service: UserTypeService;
@@ -33,24 +35,20 @@ describe('UserTypeService', () => {
 
   beforeEach(() => jest.resetAllMocks());
 
-  const userType: UserType = {
-    name: 'name',
-  } as UserType;
-
   describe('createUserType', () => {
     const createUserTypeDto: CreateUserTypeDto = {
-      name: 'name',
+      name: UserTypeEnum.USER,
     };
 
     it('Should successfully create a user type', async () => {
       repositoryMock.findOne = jest.fn();
       repositoryMock.create = jest
         .fn()
-        .mockReturnValue({ save: () => userType });
+        .mockReturnValue({ save: () => mockUserType });
 
       const result = await service.createUserType(createUserTypeDto);
 
-      expect(result).toStrictEqual(userType);
+      expect(result).toStrictEqual(mockUserType);
       expect(repositoryMock.create).toHaveBeenCalledWith({
         ...createUserTypeDto,
       });
@@ -61,7 +59,7 @@ describe('UserTypeService', () => {
         'user type with that name already exists',
       );
 
-      repositoryMock.findOne = jest.fn().mockResolvedValue(userType);
+      repositoryMock.findOne = jest.fn().mockResolvedValue(mockUserType);
 
       await expect(
         service.createUserType(createUserTypeDto),
@@ -72,21 +70,21 @@ describe('UserTypeService', () => {
 
   describe('updateUserType', () => {
     const updateUserUserTypeDto: UpdateUserUserTypeDto = {
-      name: 'name',
+      name: UserTypeEnum.USER,
     };
     it('Should successfully update a user type', async () => {
-      repositoryMock.findOne = jest.fn().mockReturnValue(userType);
+      repositoryMock.findOne = jest.fn().mockReturnValue(mockUserType);
       repositoryMock.preload = jest
         .fn()
-        .mockReturnValue({ save: () => userType });
+        .mockReturnValue({ save: () => mockUserType });
 
       const result = await service.updateUserType(
-        userType.id,
+        mockUserType.id,
         updateUserUserTypeDto,
       );
-      expect(result).toStrictEqual(userType);
+      expect(result).toStrictEqual(mockUserType);
       expect(repositoryMock.preload).toHaveBeenCalledWith({
-        id: userType.id,
+        id: mockUserType.id,
         ...updateUserUserTypeDto,
       });
     });
@@ -97,7 +95,7 @@ describe('UserTypeService', () => {
       repositoryMock.findOne = jest.fn();
 
       await expect(
-        service.updateUserType(userType.id, updateUserUserTypeDto),
+        service.updateUserType(mockUserType.id, updateUserUserTypeDto),
       ).rejects.toStrictEqual(error);
       expect(repositoryMock.preload).not.toHaveBeenCalled();
     });
@@ -105,11 +103,11 @@ describe('UserTypeService', () => {
 
   describe('getUserTypeById', () => {
     it('Should successfully get a user type by id', async () => {
-      repositoryMock.findOne = jest.fn().mockReturnValue(userType);
+      repositoryMock.findOne = jest.fn().mockReturnValue(mockUserType);
 
-      const result = await service.getUserTypeById(userType.id);
+      const result = await service.getUserTypeById(mockUserType.id);
 
-      expect(result).toStrictEqual(userType);
+      expect(result).toStrictEqual(mockUserType);
     });
 
     it('Should throw the NotFoundException exception user type with this id not found', async () => {
@@ -117,70 +115,75 @@ describe('UserTypeService', () => {
 
       repositoryMock.findOne = jest.fn();
 
-      await expect(service.getUserTypeById(userType.id)).rejects.toStrictEqual(
-        error,
-      );
+      await expect(
+        service.getUserTypeById(mockUserType.id),
+      ).rejects.toStrictEqual(error);
     });
   });
 
   describe('getUserTypesByIds', () => {
     it('Should successfully get a user type by ids', async () => {
-      repositoryMock.findBy = jest.fn().mockReturnValue([userType]);
+      repositoryMock.findBy = jest.fn().mockReturnValue([mockUserType]);
 
-      const result = await service.getUserTypesByIds([userType.id]);
+      const result = await service.getUserTypesByIds([mockUserType.id]);
 
-      expect(result).toStrictEqual([userType]);
+      expect(result).toStrictEqual([mockUserType]);
     });
 
     describe('getAllUserType', () => {
       it('Should successfully get all a user type', async () => {
         const take = 1;
         const skip = 0;
+        const search = '';
+
         const conditions: FindManyOptions<UserType> = {
           take,
           skip,
         };
         repositoryMock.findAndCount = jest
           .fn()
-          .mockReturnValue([[userType], 10]);
+          .mockReturnValue([[mockUserType], 10]);
 
-        const result = await service.getAllUserType(take, skip, null);
+        const result = await service.getAllUserTypes(take, skip, search);
         expect(result).toStrictEqual({
           skip: 1,
           total: 10,
-          usertypes: [userType],
+          usertypes: [mockUserType],
         });
         expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
       });
 
-      it('Should successfully get all user type with search', async () => {
-        const search = 'aaa';
+      it('Should successfully get all user types with search', async () => {
+        const search = 'user';
         const take = 10;
         const skip = 0;
 
-        const conditions: FindManyOptions<UserType> = {
-          take,
-          skip,
-          where: { name: ILike('%' + search + '%') },
-        };
-
         repositoryMock.findAndCount = jest
           .fn()
-          .mockReturnValue([[userType], 10]);
+          .mockReturnValue([[mockUserType], 1]);
 
-        const result = await service.getAllUserType(take, skip, search);
+        const result = await service.getAllUserTypes(take, skip, search);
+
+        const filteredUserTypes = result.usertypes.filter((ut) =>
+          String(ut.name).toLowerCase().includes(search.toLowerCase()),
+        );
 
         expect(result).toStrictEqual({
           skip: null,
-          total: 10,
-          usertypes: [userType],
+          total: filteredUserTypes.length,
+          usertypes: filteredUserTypes,
         });
-        expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+        expect(repositoryMock.findAndCount).toHaveBeenCalledWith({
+          take,
+          skip,
+          where: { name: UserTypeEnum.USER },
+        });
       });
 
       it('Should successfully return an empty list of user type', async () => {
         const take = 10;
         const skip = 10;
+        const search = '';
 
         const conditions: FindManyOptions<UserType> = {
           take,
@@ -189,7 +192,7 @@ describe('UserTypeService', () => {
 
         repositoryMock.findAndCount = jest.fn().mockReturnValue([[], 0]);
 
-        const result = await service.getAllUserType(take, skip, null);
+        const result = await service.getAllUserTypes(take, skip, search);
 
         expect(result).toStrictEqual({
           skip: null,
@@ -200,12 +203,12 @@ describe('UserTypeService', () => {
       });
     });
 
-    describe('deleteuserType', () => {
-      it('Should successfully delete a user type', async () => {
-        repositoryMock.findOne = jest.fn().mockReturnValue(userType);
+    describe('deleteUserTypeById', () => {
+      it('Should successfully delete a user type by id', async () => {
+        repositoryMock.findOne = jest.fn().mockReturnValue(mockUserType);
         repositoryMock.remove = jest.fn();
 
-        const result = await service.deleteUserType(userType.id);
+        const result = await service.deleteUserTypeById(mockUserType.id);
         expect(result).toStrictEqual('removed');
       });
 
@@ -214,9 +217,9 @@ describe('UserTypeService', () => {
 
         repositoryMock.findOne = jest.fn();
 
-        await expect(service.deleteUserType(userType.id)).rejects.toStrictEqual(
-          error,
-        );
+        await expect(
+          service.deleteUserTypeById(mockUserType.id),
+        ).rejects.toStrictEqual(error);
       });
     });
   });

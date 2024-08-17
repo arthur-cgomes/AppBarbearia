@@ -4,11 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, ILike, In, Repository } from 'typeorm';
+import { FindManyOptions, In, Repository } from 'typeorm';
 import { CreateUserTypeDto } from './dto/create-user-type.dto';
 import { GetAllUserTypesResponseDto } from './dto/get-all-user-type.dto';
 import { UpdateUserUserTypeDto } from './dto/update-user-type.dto';
 import { UserType } from './entity/user-type.entity';
+import { UserTypeEnum } from '../common/enum/user-type.enum';
 
 @Injectable()
 export class UserTypeService {
@@ -33,50 +34,60 @@ export class UserTypeService {
   }
 
   public async updateUserType(
-    id: string,
+    userTypeId: string,
     updateUserUserTypeDto: UpdateUserUserTypeDto,
   ): Promise<UserType> {
-    await this.getUserTypeById(id);
+    await this.getUserTypeById(userTypeId);
 
     return await (
       await this.usertypeRepository.preload({
-        id,
+        id: userTypeId,
         ...updateUserUserTypeDto,
       })
     ).save();
   }
 
-  public async getUserTypeById(id: string): Promise<UserType> {
-    const user_type = await this.usertypeRepository.findOne({
-      where: { id },
+  public async getUserTypeById(userTypeId: string): Promise<UserType> {
+    const userType = await this.usertypeRepository.findOne({
+      where: { id: userTypeId },
     });
-    if (!user_type)
+
+    if (!userType)
       throw new NotFoundException('user type with this id not found');
 
-    return user_type;
+    return userType;
   }
 
   public async getUserTypesByIds(ids: string[]): Promise<UserType[]> {
     return await this.usertypeRepository.findBy({ id: In(ids) });
   }
 
-  public async getAllUserType(
+  public async getAllUserTypes(
     take: number,
     skip: number,
+    sort: string,
+    order: 'ASC' | 'DESC',
     search?: string,
   ): Promise<GetAllUserTypesResponseDto> {
     const conditions: FindManyOptions<UserType> = {
       take,
       skip,
+      order: {
+        [sort]: order,
+      },
     };
 
     if (search) {
-      conditions.where = { name: ILike('%' + search + '%') };
+      const searchValue = Object.values(UserTypeEnum).find((value) =>
+        value.includes(search.toLowerCase()),
+      );
+      if (searchValue) {
+        conditions.where = { name: searchValue };
+      }
     }
 
-    const [usertypes, count] = await this.usertypeRepository.findAndCount(
-      conditions,
-    );
+    const [usertypes, count] =
+      await this.usertypeRepository.findAndCount(conditions);
 
     if (usertypes.length == 0) {
       return { skip: null, total: 0, usertypes };
@@ -87,13 +98,8 @@ export class UserTypeService {
     return { skip, total: count, usertypes };
   }
 
-  public async deleteUserType(id: string): Promise<string> {
-    const userType = await this.usertypeRepository.findOne({
-      where: { id },
-    });
-    if (!userType)
-      throw new NotFoundException('user type with this id not found');
-
+  public async deleteUserTypeById(userTypeId: string): Promise<string> {
+    const userType = await this.getUserTypeById(userTypeId);
     await this.usertypeRepository.remove(userType);
 
     return 'removed';

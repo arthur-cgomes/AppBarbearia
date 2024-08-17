@@ -3,12 +3,24 @@ import { UserType } from '../entity/user-type.entity';
 import { UserTypeDto } from './user-type.dto';
 
 export class GetAllUserTypesResponseDto {
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Total de serviços que correspondem aos critérios',
+    example: 10,
+  })
   total: number;
 
-  @ApiProperty()
-  skip: number;
+  @ApiProperty({
+    description:
+      'A posição atual no conjunto de resultados, ou nula se não houver mais resultados',
+    example: 5,
+    nullable: true,
+  })
+  skip: number | null;
 
-  @ApiProperty({ type: UserTypeDto, isArray: true })
+  @ApiProperty({
+    type: UserTypeDto,
+    isArray: true,
+    description: 'A lista de tipos de usuários',
+  })
   usertypes: UserType[];
 }

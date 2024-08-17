@@ -1,30 +1,45 @@
 import { BaseCollection } from '../../common/entity/base.entity';
-import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
-import { User } from '../../user/entity/user.entity';
 import { Scheduling } from '../../scheduling/entity/scheduling.entity';
+import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
+import { ServiceType } from '../../common/enum/service-type.enum';
 
 @Entity()
 export class Services extends BaseCollection {
-  @ApiProperty()
-  @IsNotEmpty()
-  @Column({ length: 200 })
+  @ApiProperty({
+    description: 'Nome do serviço',
+    type: String,
+  })
+  @Column({ type: 'varchar', default: null, nullable: true })
   name: string;
 
-  @ApiProperty()
-  @Column({ name: 'service_type', length: 50 })
-  type: string;
+  @ApiProperty({
+    description: 'Tipo do serviço',
+    type: 'enum',
+  })
+  @Column({ type: 'enum', enum: ServiceType, default: ServiceType.HAIR })
+  type: ServiceType;
 
-  @ApiProperty()
-  @Column()
+  @ApiProperty({
+    description: 'Valor do serviço',
+    type: String,
+  })
+  @Column({ type: 'varchar', default: null, nullable: true })
   value: string;
 
-  @ApiProperty()
-  @ManyToMany(() => User, (user) => user.services)
-  users: User[];
+  @ApiProperty({
+    description: 'Relacionamento com a tabela BarberShop',
+    type: () => BarberShop,
+  })
+  @ManyToMany(() => BarberShop, (barberShop) => barberShop.services)
+  @JoinTable({ name: 'barbershop_services' })
+  barberShop: BarberShop[];
 
-  @ApiProperty()
-  @OneToMany(() => Scheduling, (scheduling) => scheduling.services)
-  schedulings: Scheduling[];
+  @ApiProperty({
+    description: 'Relacionamento com a tabela Scheduling',
+    type: () => Scheduling,
+  })
+  @ManyToMany(() => Scheduling, (scheduling) => scheduling.services)
+  scheduling: Scheduling[];
 }

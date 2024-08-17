@@ -1,17 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
 import { BaseCollection } from '../../common/entity/base.entity';
-import { Column, Entity, ManyToMany } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
+import { UserTypeEnum } from '../../common/enum/user-type.enum';
 import { User } from '../../user/entity/user.entity';
 
 @Entity()
 export class UserType extends BaseCollection {
-  @ApiProperty()
-  @IsNotEmpty()
-  @Column({ length: 150 })
-  name: string;
+  @ApiProperty({
+    description: 'Nome do tipo de usuário',
+    type: 'Enum',
+  })
+  @Column({
+    type: 'enum',
+    enum: UserTypeEnum,
+    default: UserTypeEnum.USER,
+    nullable: true,
+  })
+  name: UserTypeEnum;
 
-  @ApiProperty()
-  @ManyToMany(() => User, (user) => user.userTypes)
-  users: User[];
+  @ApiProperty({
+    description: 'Relacionamento com a tabela User',
+    type: () => User,
+  })
+  @OneToMany(() => User, (user) => user.userType)
+  user: User[];
 }

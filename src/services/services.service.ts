@@ -21,7 +21,10 @@ export class ServicesService {
     createServiceDto: CreateServiceDto,
   ): Promise<Services> {
     const chekService = await this.servicesRepository.findOne({
-      where: { name: createServiceDto.name },
+      where: {
+        name: createServiceDto.name,
+        barberShop: { id: createServiceDto.barberShopId },
+      },
     });
 
     if (chekService) {
@@ -32,23 +35,25 @@ export class ServicesService {
   }
 
   public async updateService(
-    id: string,
+    serviceId: string,
     updateServiceDto: UpdateServiceDto,
   ): Promise<Services> {
-    await this.getServiceById(id);
+    await this.getServiceById(serviceId);
 
     return await (
       await this.servicesRepository.preload({
-        id,
+        id: serviceId,
         ...updateServiceDto,
       })
     ).save();
   }
 
-  public async getServiceById(id: string): Promise<Services> {
+  public async getServiceById(serviceId: string): Promise<Services> {
     const service = await this.servicesRepository.findOne({
-      where: { id },
+      where: { id: serviceId },
+      relations: ['barberShop'],
     });
+
     if (!service) throw new NotFoundException('service with this id not found');
 
     return service;
@@ -57,23 +62,28 @@ export class ServicesService {
   public async getAllServices(
     take: number,
     skip: number,
-    serviceId: string,
+    barberShopId?: string,
     search?: string,
   ): Promise<GetAllServicesResponseDto> {
     const conditions: FindManyOptions<Services> = {
       take,
       skip,
+      where: {},
     };
 
-    if (serviceId) {
-      conditions.where = { id: serviceId };
-    } else if (search) {
+    if (barberShopId) {
+      conditions.where = {
+        ...conditions.where,
+        barberShop: { id: barberShopId },
+      };
+    }
+
+    if (search) {
       conditions.where = { name: ILike('%' + search + '%') };
     }
 
-    const [services, count] = await this.servicesRepository.findAndCount(
-      conditions,
-    );
+    const [services, count] =
+      await this.servicesRepository.findAndCount(conditions);
 
     if (services.length == 0) {
       return { skip: null, total: 0, services };
@@ -84,14 +94,8 @@ export class ServicesService {
     return { skip, total: count, services };
   }
 
-  public async deleteService(serviceId: string): Promise<string> {
-    const deleteService = await this.servicesRepository.findOne({
-      where: [{ id: serviceId }],
-    });
-
-    if (!deleteService)
-      throw new NotFoundException('service with this id not found');
-
+  public async deleteServiceById(serviceId: string): Promise<string> {
+    const deleteService = await this.getServiceById(serviceId);
     await this.servicesRepository.remove(deleteService);
 
     return 'removed';

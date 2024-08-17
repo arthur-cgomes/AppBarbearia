@@ -48,7 +48,7 @@ export class ServicesController {
   }
 
   @UseGuards(AuthGuard())
-  @Put(':id')
+  @Put('/:serviceId')
   @ApiOperation({
     summary: 'Atualiza um serviço',
   })
@@ -58,14 +58,16 @@ export class ServicesController {
     description: 'Dados inválidos',
   })
   async updateService(
-    @Param('id') id: string,
+    @Param('serviceId') serviceId: string,
     @Body() updateServiceDto: UpdateServiceDto,
   ) {
-    return await this.servicesService.updateService(id, updateServiceDto);
+    return await this.servicesService.updateService(
+      serviceId,
+      updateServiceDto,
+    );
   }
 
-  @UseGuards(AuthGuard())
-  @Get(':id')
+  @Get('/:serviceId')
   @ApiOperation({
     summary: 'Retorna um serviço pelo id',
   })
@@ -75,38 +77,37 @@ export class ServicesController {
     return await this.servicesService.getServiceById(id);
   }
 
-  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todos os serviços',
   })
   @ApiQuery({ name: 'take', required: false })
   @ApiQuery({ name: 'skip', required: false })
-  @ApiQuery({ name: 'serviceId', required: false })
+  @ApiQuery({ name: 'barberShopId', required: false })
   @ApiQuery({ name: 'search', required: false })
   @ApiOkResponse({ type: GetAllServicesResponseDto })
   async getAllServices(
     @Query('take') take = 10,
     @Query('skip') skip = 0,
-    @Query('serviceId') serviceId: string,
+    @Query('barberShopId') barberShopId?: string,
     @Query('search') search?: string,
   ) {
     return await this.servicesService.getAllServices(
       take,
       skip,
-      serviceId,
+      barberShopId,
       search,
     );
   }
 
   @UseGuards(AuthGuard())
-  @Delete(':serviceId')
+  @Delete('/:serviceId')
   @ApiOperation({
     summary: 'Exclui um serviço',
   })
   @ApiOkResponse({ type: DeleteResponseDto })
   @ApiNotFoundResponse({ description: 'Serviço não encontrado' })
-  async deleteService(@Param('serviceId') serviceId: string) {
-    return { message: await this.servicesService.deleteService(serviceId) };
+  async deleteServiceById(@Param('serviceId') serviceId: string) {
+    return { message: await this.servicesService.deleteServiceById(serviceId) };
   }
 }

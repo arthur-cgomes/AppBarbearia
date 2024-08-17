@@ -1,17 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { ServiceType } from '../../common/enum/service-type.enum';
 
 export class UpdateServiceDto {
-  @ApiProperty({ type: String })
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Nome do serviço',
+    type: String,
+  })
   @IsOptional()
+  @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Tipo do serviço',
+    type: 'enum',
+  })
   @IsOptional()
-  type: string;
+  @IsEnum({ type: 'enum', enum: ServiceType })
+  type: ServiceType;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Valor do serviço',
+    type: String,
+  })
   @IsOptional()
+  @IsString()
   value: string;
 }

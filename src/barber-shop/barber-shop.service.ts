@@ -21,7 +21,7 @@ export class BarberShopService {
     createBarberShopDto: CreateBarberShopDto,
   ): Promise<BarberShop> {
     const checkBarberShop = await this.barbershopRepository.findOne({
-      where: [{ cnpj: createBarberShopDto.cnpj }],
+      where: { document: createBarberShopDto.document },
     });
 
     if (checkBarberShop)
@@ -33,19 +33,22 @@ export class BarberShopService {
   }
 
   public async updateBarberShop(
-    id: string,
+    barbershopId: string,
     updateBarberShopDto: UpdateBarberShopDto,
   ): Promise<BarberShop> {
-    await this.getBarberShopById(id);
+    await this.getBarberShopById(barbershopId);
 
     return await (
-      await this.barbershopRepository.preload({ id, ...updateBarberShopDto })
+      await this.barbershopRepository.preload({
+        id: barbershopId,
+        ...updateBarberShopDto,
+      })
     ).save();
   }
 
-  public async getBarberShopById(id: string): Promise<BarberShop> {
+  public async getBarberShopById(barbershopId: string): Promise<BarberShop> {
     const barbershop = await this.barbershopRepository.findOne({
-      where: { id },
+      where: { id: barbershopId },
     });
 
     if (!barbershop)
@@ -58,10 +61,10 @@ export class BarberShopService {
     return await this.barbershopRepository.findBy({ id: In(ids) });
   }
 
-  public async getAllBarberShop(
+  public async getAllBarberShops(
     take: number,
     skip: number,
-    barbershopId: string,
+    document?: string,
     search?: string,
   ): Promise<GetAllBarberShopResponseDto> {
     const conditions: FindManyOptions<BarberShop> = {
@@ -69,15 +72,16 @@ export class BarberShopService {
       skip,
     };
 
-    if (barbershopId) {
-      conditions.where = { id: barbershopId };
-    } else if (search) {
+    if (document) {
+      conditions.where = { document };
+    }
+
+    if (search) {
       conditions.where = { name: ILike('%' + search + '%') };
     }
 
-    const [barbershops, count] = await this.barbershopRepository.findAndCount(
-      conditions,
-    );
+    const [barbershops, count] =
+      await this.barbershopRepository.findAndCount(conditions);
 
     if (barbershops.length == 0) {
       return { skip: null, total: 0, barbershops };
@@ -88,15 +92,9 @@ export class BarberShopService {
     return { skip, total: count, barbershops };
   }
 
-  public async deleteBarberShop(barbershopId: string): Promise<string> {
-    const deleteBarberShop = await this.barbershopRepository.findOne({
-      where: [{ id: barbershopId }],
-    });
-
-    if (!deleteBarberShop)
-      throw new NotFoundException('barbershop with this id not found');
-
-    await this.barbershopRepository.remove(deleteBarberShop);
+  public async deleteBarberShopById(barbershopId: string): Promise<string> {
+    const barberShop = await this.getBarberShopById(barbershopId);
+    await this.barbershopRepository.remove(barberShop);
 
     return 'removed';
   }

@@ -1,4 +1,8 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, JwtResponse } from './interfaces/jwt-payload.interface';
 import { AuthPayload } from './interfaces/auth.interface';
@@ -22,7 +26,7 @@ export class AuthService {
     return new Promise((resolve, reject) => {
       if (userToAttempt.checkPassword(loginAttempt.password))
         resolve(this.createJwtPayload(userToAttempt));
-      else reject(new HttpException('Senha inválida', HttpStatus.FORBIDDEN));
+      else reject(new ForbiddenException('Senha inválida'));
     });
   }
 
@@ -44,7 +48,7 @@ export class AuthService {
     if (user) {
       return this.createJwtPayload(user);
     } else {
-      throw new HttpException('Token inválido', HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException('Token inválido');
     }
   }
 }

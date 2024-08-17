@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Repository } from 'typeorm';
+import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { CreateBarberDto } from './dto/create-barber.dto';
 import { GetAllBarbersResponseDto } from './dto/get-all-barber-response.dto';
 import { UpdateBarberDto } from './dto/update-barber.dto';
@@ -19,11 +19,7 @@ export class BarberService {
 
   public async createBarber(createBarberDto: CreateBarberDto): Promise<Barber> {
     const barber = await this.barberRepository.findOne({
-      where: [
-        { cpf: createBarberDto.cpf },
-        { email: createBarberDto.email },
-        { phone: createBarberDto.phone },
-      ],
+      where: { document: createBarberDto.document },
     });
 
     if (barber) {
@@ -37,12 +33,8 @@ export class BarberService {
     barberId: string,
     updateBarberDto: UpdateBarberDto,
   ): Promise<Barber> {
-    const barber = await this.barberRepository.findOne({
-      where: [{ id: barberId }],
-    });
-    if (!barber) {
-      throw new NotFoundException('barber not found');
-    }
+    await this.getBarberById(barberId);
+
     return await (
       await this.barberRepository.preload({
         id: barberId,
@@ -53,31 +45,37 @@ export class BarberService {
 
   public async getBarberById(barberId: string): Promise<Barber> {
     const barber = await this.barberRepository.findOne({
-      where: [{ id: barberId }],
+      where: { id: barberId },
     });
+
     if (!barber) {
-      throw new NotFoundException('barber not found');
+      throw new NotFoundException('barber id not found');
     }
+
     return barber;
   }
 
   public async getAllBarbers(
     take: number,
     skip: number,
-    barberId?: string,
+    barbershopId?: string,
+    search?: string,
   ): Promise<GetAllBarbersResponseDto> {
     const conditions: FindManyOptions<Barber> = {
       take,
       skip,
     };
 
-    if (barberId) {
-      conditions.where = { id: barberId };
+    if (barbershopId) {
+      conditions.where = { barbershop: { id: barbershopId } };
     }
 
-    const [barber, count] = await this.barberRepository.findAndCount(
-      conditions,
-    );
+    if (search) {
+      conditions.where = { name: ILike('%' + search + '%') };
+    }
+
+    const [barber, count] =
+      await this.barberRepository.findAndCount(conditions);
 
     if (barber.length == 0) {
       return { skip: null, total: 0, barbers: [] };
@@ -88,14 +86,10 @@ export class BarberService {
     return { skip, total: count, barbers: barber };
   }
 
-  public async deleteBarber(barberId: string): Promise<string> {
-    const barber = await this.barberRepository.findOne({
-      where: [{ id: barberId }],
-    });
-    if (!barber) {
-      throw new NotFoundException('barber not found');
-    }
+  public async deleteBarberById(barberId: string): Promise<string> {
+    const barber = await this.getBarberById(barberId);
     await this.barberRepository.remove(barber);
+
     return 'removed';
   }
 }

@@ -32,7 +32,7 @@ import { UserService } from './user.service';
 
 @ApiBearerAuth()
 @ApiTags('User')
-@Controller('users')
+@Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -49,7 +49,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard())
-  @Put(':userId')
+  @Put('/:userId')
   @ApiOperation({
     summary: 'Atualiza um usuário',
   })
@@ -66,7 +66,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard())
-  @Put('user-types/:userId')
+  @Put('/user-types/:userId')
   @ApiOperation({
     summary: 'Atualiza os tipos de usuário',
   })
@@ -82,8 +82,7 @@ export class UserController {
     return await this.userService.updateUserType(userId, updateManyToManyDto);
   }
 
-  @UseGuards(AuthGuard())
-  @Get(':userId')
+  @Get('/:userId')
   @ApiOperation({
     summary: 'Retorna um usuário pelo id',
   })
@@ -93,31 +92,34 @@ export class UserController {
     return await this.userService.getUserById(userId);
   }
 
-  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todos usuários',
   })
   @ApiQuery({ name: 'take', required: false })
   @ApiQuery({ name: 'skip', required: false })
-  @ApiQuery({ name: 'userId', required: false })
+  @ApiQuery({ name: 'sort', required: false })
+  @ApiQuery({ name: 'order', required: false })
+  @ApiQuery({ name: 'search', required: false })
   @ApiOkResponse({ type: GetAllUsersResponseDto })
   async getAllUsers(
     @Query('take') take = 10,
     @Query('skip') skip = 0,
-    @Query('userId') userId?: string,
+    @Query('sort') sort = 'name',
+    @Query('order') order: 'ASC' | 'DESC' = 'ASC',
+    @Query('search') search: string,
   ) {
-    return await this.userService.getAllUsers(take, skip, userId);
+    return await this.userService.getAllUsers(take, skip, sort, order, search);
   }
 
   @UseGuards(AuthGuard())
-  @Delete(':userId')
+  @Delete('/:userId')
   @ApiOperation({
     summary: 'Exclui um usuário',
   })
   @ApiOkResponse({ type: DeleteResponseDto })
   @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
   async deleteUserById(@Param('userId') userId: string) {
-    return { message: await this.userService.deleteUser(userId) };
+    return { message: await this.userService.deleteUserById(userId) };
   }
 }
