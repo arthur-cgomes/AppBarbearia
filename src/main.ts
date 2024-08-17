@@ -13,11 +13,11 @@ async function bootstrap() {
   });
 
   const options = new DocumentBuilder()
-    .setTitle(`App Barbearia`)
+    .setTitle(`💈App Barbearia`)
     .setDescription('Back-end do projeto App Barbearia')
     .setVersion(version)
     .addBearerAuth()
-    .addTag('Endpoints')
+    .addTag('Endpoints:')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

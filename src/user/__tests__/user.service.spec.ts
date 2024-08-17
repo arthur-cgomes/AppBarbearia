@@ -10,15 +10,11 @@ import { User } from '../entity/user.entity';
 import { UserService } from '../user.service';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { UserTypeService } from '../../user-type/user-type.service';
-import { UserType } from '../../user-type/entity/user-type.entity';
-import { UpdateManyToManyDto } from 'src/common/dto/update-many-to-many.dto';
-import { BadRequestException } from '@nestjs/common/exceptions';
 import { mockUser } from './mocks/user.mock';
+import { UserTypeEnum } from 'src/common/enum/user-type.enum';
 
 describe('UserService', () => {
   let service: UserService;
-  let userTypeService: UserTypeService;
   let repositoryMock: MockRepository<Repository<User>>;
 
   beforeAll(async () => {
@@ -29,17 +25,10 @@ describe('UserService', () => {
           provide: getRepositoryToken(User),
           useValue: repositoryMockFactory<User>(),
         },
-        UserTypeService,
-        {
-          provide: getRepositoryToken(UserType),
-          useValue: repositoryMockFactory<UserType>(),
-        },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
-    userTypeService = module.get<UserTypeService>(UserTypeService);
-
     repositoryMock = module.get(getRepositoryToken(User));
   });
 
@@ -76,11 +65,13 @@ describe('UserService', () => {
 
   describe('createUser', () => {
     const createUserDto: CreateUserDto = {
-      email: 'email@agtecnologia.com.br',
-      password: 'password',
       name: 'Arthur Gomes',
+      document: '000.000.000-00',
       birthdate: new Date(),
       cellphone: '(31)98517-1031',
+      email: 'email@agtecnologia.com.br',
+      password: 'password',
+      userType: UserTypeEnum.ADMIN,
     };
 
     it('Should successfully create user', async () => {
@@ -144,82 +135,6 @@ describe('UserService', () => {
     });
   });
 
-  describe('updateUserType', () => {
-    const toAddOrRemoveDto: UpdateManyToManyDto = {
-      toAdd: ['b899140f-1b11-459b-b631-649777702d00'],
-      toRemove: ['6fd2049a-b9ba-422f-b228-bc6e3ca251af'],
-    };
-    const userTypesToAdd = [
-      {
-        id: 'b899140f-1b11-459b-b631-649777702d00',
-        name: 'will be add',
-      },
-    ] as UserType[];
-
-    it('Should successfully update a user`s userTypes', async () => {
-      mockUser.userTypes = [
-        {
-          id: '1as4540f-1b11-459b-b631-649hdgat1759',
-          name: 'will be kept',
-        },
-        {
-          id: '6fd2049a-b9ba-422f-b228-bc6e3ca251af',
-          name: 'will be removed',
-        },
-      ] as UserType[];
-
-      jest
-        .spyOn(userTypeService, 'getUserTypesByIds')
-        .mockResolvedValue(userTypesToAdd);
-      repositoryMock.findOne = jest.fn().mockResolvedValue(mockUser);
-      repositoryMock.preload = jest
-        .fn()
-        .mockResolvedValue({ save: () => mockUser });
-
-      const result = await service.updateUserType(
-        mockUser.id,
-        toAddOrRemoveDto,
-      );
-      expect(result).toStrictEqual(mockUser);
-      expect(result.userTypes).toStrictEqual([
-        {
-          id: '1as4540f-1b11-459b-b631-649hdgat1759',
-          name: 'will be kept',
-        },
-        {
-          id: 'b899140f-1b11-459b-b631-649777702d00',
-          name: 'will be add',
-        },
-      ] as UserType[]);
-      expect(repositoryMock.preload).toHaveBeenCalledWith(mockUser);
-    });
-
-    it('Should throw the NotFoundException exception when the user not found', async () => {
-      const error = new NotFoundException(
-        'user with this externalId not found',
-      );
-
-      repositoryMock.findOne = jest.fn();
-
-      await expect(
-        service.updateUserType(mockUser.id, toAddOrRemoveDto),
-      ).rejects.toStrictEqual(error);
-      expect(repositoryMock.preload).not.toHaveBeenCalled();
-    });
-
-    it('Should throw the BadRequestException exception when the list is invalid', async () => {
-      const error = new BadRequestException('toAdd list has some invalid id');
-
-      jest.spyOn(userTypeService, 'getUserTypesByIds').mockResolvedValue([]);
-      repositoryMock.findOne = jest.fn().mockResolvedValue(mockUser);
-
-      await expect(
-        service.updateUserType(mockUser.id, toAddOrRemoveDto),
-      ).rejects.toStrictEqual(error);
-      expect(repositoryMock.preload).not.toHaveBeenCalled();
-    });
-  });
-
   describe('getUserById', () => {
     it('Should successfully get a user by id', async () => {
       repositoryMock.findOne = jest.fn().mockReturnValue(mockUser);
@@ -263,7 +178,7 @@ describe('UserService', () => {
 
       repositoryMock.findAndCount = jest.fn().mockReturnValue([[mockUser], 10]);
 
-      const result = await service.getAllUsers(take, skip, search, '', 'ASC');
+      const result = await service.getAllUsers(take, skip, '', 'ASC', search);
 
       expect(result).toStrictEqual({
         skip: 1,
@@ -287,7 +202,7 @@ describe('UserService', () => {
 
       repositoryMock.findAndCount = jest.fn().mockReturnValue([[mockUser], 10]);
 
-      const result = await service.getAllUsers(take, skip, search, '', 'ASC');
+      const result = await service.getAllUsers(take, skip, '', 'ASC', search);
 
       expect(result).toStrictEqual({
         skip: null,
@@ -309,7 +224,7 @@ describe('UserService', () => {
 
       repositoryMock.findAndCount = jest.fn().mockReturnValue([[], 0]);
 
-      const result = await service.getAllUsers(take, skip, search, '', 'ASC');
+      const result = await service.getAllUsers(take, skip, '', 'ASC', search);
 
       expect(result).toStrictEqual({ skip: null, total: 0, users: [] });
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);

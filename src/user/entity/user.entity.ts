@@ -5,13 +5,12 @@ import {
   BeforeUpdate,
   Column,
   Entity,
-  ManyToOne,
   OneToMany,
   Unique,
 } from 'typeorm';
-import { UserType } from '../../user-type/entity/user-type.entity';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 import { Scheduling } from '../../scheduling/entity/scheduling.entity';
+import { UserTypeEnum } from 'src/common/enum/user-type.enum';
 import * as bcrypt from 'bcrypt';
 
 @Entity()
@@ -60,11 +59,11 @@ export class User extends BaseCollection {
   cellphone: string;
 
   @ApiProperty({
-    description: 'Relacionamento com a tabela UserType',
-    type: () => UserType,
+    description: 'Tipo do usuário',
+    type: 'Enum',
   })
-  @ManyToOne(() => UserType, (usertype) => usertype.user)
-  userType: UserType;
+  @Column({ type: 'varchar', default: UserTypeEnum.USER })
+  userType: UserTypeEnum;
 
   @ApiProperty({
     description: 'Relacionamento com a tabela BarberShop',

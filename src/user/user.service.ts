@@ -1,22 +1,18 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserTypeService } from '../user-type/user-type.service';
+import { User } from './entity/user.entity';
 import { FindManyOptions, ILike, In, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetAllUsersResponseDto } from './dto/get-all-user-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entity/user.entity';
-import { UpdateManyToManyDto } from '../common/dto/update-many-to-many.dto';
 
 @Injectable()
 export class UserService {
   constructor(
-    private readonly userTypeService: UserTypeService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
@@ -58,38 +54,6 @@ export class UserService {
         ...updateUserDto,
       })
     ).save();
-  }
-
-  public async updateUserType(
-    userId: string,
-    toAddOrRemoveDto: UpdateManyToManyDto,
-  ): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ['userType'],
-    });
-
-    if (!user) {
-      throw new NotFoundException('user with this id not found');
-    }
-
-    if (toAddOrRemoveDto.toAdd.length > 0) {
-      const userTypeToAdd = await this.userTypeService.getUserTypeById(
-        toAddOrRemoveDto.toAdd[0],
-      );
-
-      if (!userTypeToAdd) {
-        throw new BadRequestException('Invalid userType id');
-      }
-
-      user.userType = userTypeToAdd;
-    }
-
-    if (toAddOrRemoveDto.toRemove.length > 0) {
-      user.userType = null;
-    }
-
-    return await this.userRepository.save(user);
   }
 
   public async getUserById(userId: string): Promise<User> {

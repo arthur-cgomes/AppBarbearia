@@ -29,7 +29,7 @@ import { GetAllBarberShopResponseDto } from './dto/get-all-barbershop.dto';
 import { UpdateBarberShopDto } from './dto/update-barbershop.dto';
 
 @ApiBearerAuth()
-@ApiTags('BarberShop')
+@ApiTags('Barber-Shop')
 @Controller('barbershop')
 export class BarberShopController {
   constructor(private readonly barbershopService: BarberShopService) {}

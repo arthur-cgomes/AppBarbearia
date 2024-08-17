@@ -1,15 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Migration1722904502694 implements MigrationInterface {
-  name = 'Migration1722904502694';
+export class Migration1723928139179 implements MigrationInterface {
+  name = 'Migration1723928139179';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `CREATE TYPE "public"."user_type_name_enum" AS ENUM('admin', 'barber', 'user')`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "user_type" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "active" boolean NOT NULL DEFAULT true, "name" "public"."user_type_name_enum" DEFAULT 'user', CONSTRAINT "PK_1f9c6d05869e094dee8fa7d392a" PRIMARY KEY ("id"))`,
-    );
     await queryRunner.query(
       `CREATE TYPE "public"."services_type_enum" AS ENUM('hair', 'beard', 'eyebrow', 'skincare', 'other')`,
     );
@@ -26,7 +20,7 @@ export class Migration1722904502694 implements MigrationInterface {
       `CREATE TABLE "barber_shop" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "active" boolean NOT NULL DEFAULT true, "name" character varying, "document" character varying, "address" character varying, "lat" character varying, "long" character varying, "cellphone" character varying, "email" character varying, CONSTRAINT "PK_1f886aa2348269079caccdd1ad4" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "active" boolean NOT NULL DEFAULT true, "name" character varying, "email" character varying, "password" character varying, "birthdate" TIMESTAMP, "cellphone" character varying(20), "userTypeId" uuid, CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "active" boolean NOT NULL DEFAULT true, "name" character varying, "birthdate" TIMESTAMP, "document" character varying, "email" character varying, "password" character varying, "cellphone" character varying(20), "userType" character varying NOT NULL DEFAULT 'user', CONSTRAINT "UQ_335a7b396d5a7b840e2e31200b4" UNIQUE ("email", "document"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "barbershop_services" ("servicesId" uuid NOT NULL, "barberShopId" uuid NOT NULL, CONSTRAINT "PK_72f15f9e1154dbd2bc8cf65a7d3" PRIMARY KEY ("servicesId", "barberShopId"))`,
@@ -63,9 +57,6 @@ export class Migration1722904502694 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "scheduling" ADD CONSTRAINT "FK_843feaec9e559db38215f0212c9" FOREIGN KEY ("barberId") REFERENCES "barber"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "user" ADD CONSTRAINT "FK_29f29dffce2845a1abc901d4e85" FOREIGN KEY ("userTypeId") REFERENCES "user_type"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "barbershop_services" ADD CONSTRAINT "FK_f3e919000f077ec7fa9632434b6" FOREIGN KEY ("servicesId") REFERENCES "services"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
@@ -107,9 +98,6 @@ export class Migration1722904502694 implements MigrationInterface {
       `ALTER TABLE "barbershop_services" DROP CONSTRAINT "FK_f3e919000f077ec7fa9632434b6"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "user" DROP CONSTRAINT "FK_29f29dffce2845a1abc901d4e85"`,
-    );
-    await queryRunner.query(
       `ALTER TABLE "scheduling" DROP CONSTRAINT "FK_843feaec9e559db38215f0212c9"`,
     );
     await queryRunner.query(
@@ -145,7 +133,5 @@ export class Migration1722904502694 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE "barber"`);
     await queryRunner.query(`DROP TABLE "services"`);
     await queryRunner.query(`DROP TYPE "public"."services_type_enum"`);
-    await queryRunner.query(`DROP TABLE "user_type"`);
-    await queryRunner.query(`DROP TYPE "public"."user_type_name_enum"`);
   }
 }
