@@ -43,8 +43,8 @@ export class BarberShopController {
   @ApiConflictResponse({
     description: 'Barbearia com esse CNPJ já existe',
   })
-  async createBarberShop(@Body() barbershop: CreateBarberShopDto) {
-    return await this.barbershopService.createBarberShop(barbershop);
+  async createBarberShop(@Body() createBarberShopDto: CreateBarberShopDto) {
+    return await this.barbershopService.createBarberShop(createBarberShopDto);
   }
 
   @UseGuards(AuthGuard())
@@ -57,7 +57,7 @@ export class BarberShopController {
   @ApiBadRequestResponse({
     description: 'Dados inválidos',
   })
-  async UpdateBarberShop(
+  async updateBarberShop(
     @Param('barbershopId') barbershopId: string,
     @Body() updateBarberShopDto: UpdateBarberShopDto,
   ) {
@@ -73,7 +73,7 @@ export class BarberShopController {
   })
   @ApiOkResponse({ type: BarberShopDto })
   @ApiNotFoundResponse({ description: 'Barbearia não encontrada' })
-  async GetBarberShop(@Param('barbershopId') barbershopId: string) {
+  async getBarberShopById(@Param('barbershopId') barbershopId: string) {
     return await this.barbershopService.getBarberShopById(barbershopId);
   }
 
@@ -83,18 +83,24 @@ export class BarberShopController {
   })
   @ApiQuery({ name: 'take', required: false })
   @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'sort', required: false })
+  @ApiQuery({ name: 'order', required: false })
   @ApiQuery({ name: 'document', required: false })
   @ApiQuery({ name: 'search', required: false })
   @ApiOkResponse({ type: GetAllBarberShopResponseDto })
-  async GetAllBarberShops(
+  async getAllBarberShops(
     @Query('take') take = 10,
     @Query('skip') skip = 0,
+    @Query('sort') sort = 'name',
+    @Query('order') order: 'ASC' | 'DESC' = 'ASC',
     @Query('document') document?: string,
     @Query('search') search?: string,
   ) {
     return await this.barbershopService.getAllBarberShops(
       take,
       skip,
+      sort,
+      order,
       document,
       search,
     );
