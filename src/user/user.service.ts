@@ -27,6 +27,25 @@ export class UserService {
     return user;
   }
 
+  async resetPassword(
+    birthdate: Date,
+    document: string,
+    newPassword: string,
+  ): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { birthdate, document },
+    });
+
+    if (!user) {
+      throw new NotFoundException(
+        'Usuário não encontrado com os dados fornecidos.',
+      );
+    }
+
+    user.password = newPassword;
+    await this.userRepository.save(user);
+  }
+
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
     const checkUser = await this.userRepository.findOne({
       where: [

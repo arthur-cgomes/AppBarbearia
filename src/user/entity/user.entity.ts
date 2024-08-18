@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 import { Scheduling } from '../../scheduling/entity/scheduling.entity';
-import { UserTypeEnum } from 'src/common/enum/user-type.enum';
+import { UserTypeEnum } from '../../common/enum/user-type.enum';
 import * as bcrypt from 'bcrypt';
 
 @Entity()

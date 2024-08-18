@@ -11,7 +11,7 @@ import { UserService } from '../user.service';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { mockUser } from './mocks/user.mock';
-import { UserTypeEnum } from 'src/common/enum/user-type.enum';
+import { UserTypeEnum } from '../../common/enum/user-type.enum';
 
 describe('UserService', () => {
   let service: UserService;
@@ -60,6 +60,42 @@ describe('UserService', () => {
         where: { email },
         select: ['id', 'email', 'password'],
       });
+    });
+  });
+
+  describe('resetPassword', () => {
+    const birthdate = new Date('1990-01-01');
+    const document = '000.000.000-00';
+    const newPassword = 'newPassword123';
+
+    it('Should successfully reset the password when birthdate and document match', async () => {
+      repositoryMock.findOne = jest.fn().mockReturnValue(mockUser);
+      repositoryMock.save = jest.fn().mockResolvedValue(mockUser);
+
+      await service.resetPassword(birthdate, document, newPassword);
+
+      expect(repositoryMock.findOne).toHaveBeenCalledWith({
+        where: { birthdate, document },
+      });
+      expect(mockUser.password).toBe(newPassword);
+      expect(repositoryMock.save).toHaveBeenCalledWith(mockUser);
+    });
+
+    it('Should throw NotFoundException when user is not found', async () => {
+      repositoryMock.findOne = jest.fn().mockReturnValue(null);
+
+      await expect(
+        service.resetPassword(birthdate, document, newPassword),
+      ).rejects.toThrow(
+        new NotFoundException(
+          'Usuário não encontrado com os dados fornecidos.',
+        ),
+      );
+
+      expect(repositoryMock.findOne).toHaveBeenCalledWith({
+        where: { birthdate, document },
+      });
+      expect(repositoryMock.save).not.toHaveBeenCalled();
     });
   });
 
@@ -124,7 +160,7 @@ describe('UserService', () => {
     });
 
     it('Should throw the NotFoundException exception when user not found', async () => {
-      const error = new NotFoundException('user not found');
+      const error = new NotFoundException('user with this id not found');
 
       repositoryMock.findOne = jest.fn();
 
