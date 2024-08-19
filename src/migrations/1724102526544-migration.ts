@@ -1,14 +1,14 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Migration1723928139179 implements MigrationInterface {
-  name = 'Migration1723928139179';
+export class Migration1724102526544 implements MigrationInterface {
+  name = 'Migration1724102526544';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TYPE "public"."services_type_enum" AS ENUM('hair', 'beard', 'eyebrow', 'skincare', 'other')`,
+      `CREATE TYPE "public"."service_type_enum" AS ENUM('hair', 'beard', 'eyebrow', 'skincare', 'other')`,
     );
     await queryRunner.query(
-      `CREATE TABLE "services" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "active" boolean NOT NULL DEFAULT true, "name" character varying, "type" "public"."services_type_enum" NOT NULL DEFAULT 'hair', "value" character varying, CONSTRAINT "PK_ba2d347a3168a296416c6c5ccb2" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "service" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "active" boolean NOT NULL DEFAULT true, "name" character varying, "type" "public"."service_type_enum" NOT NULL DEFAULT 'hair', "value" character varying, CONSTRAINT "PK_85a21558c006647cd76fdce044b" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "barber" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "active" boolean NOT NULL DEFAULT true, "name" character varying, "document" character varying(11), "email" character varying, "cellphone" character varying, CONSTRAINT "PK_393a066f1a87c8642e776ba7054" PRIMARY KEY ("id"))`,
@@ -23,22 +23,22 @@ export class Migration1723928139179 implements MigrationInterface {
       `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "active" boolean NOT NULL DEFAULT true, "name" character varying, "birthdate" TIMESTAMP, "document" character varying, "email" character varying, "password" character varying, "cellphone" character varying(20), "userType" character varying NOT NULL DEFAULT 'user', CONSTRAINT "UQ_335a7b396d5a7b840e2e31200b4" UNIQUE ("email", "document"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "barbershop_services" ("servicesId" uuid NOT NULL, "barberShopId" uuid NOT NULL, CONSTRAINT "PK_72f15f9e1154dbd2bc8cf65a7d3" PRIMARY KEY ("servicesId", "barberShopId"))`,
+      `CREATE TABLE "barbershop_services" ("serviceId" uuid NOT NULL, "barberShopId" uuid NOT NULL, CONSTRAINT "PK_918d7c01233c7915484e23d354a" PRIMARY KEY ("serviceId", "barberShopId"))`,
     );
     await queryRunner.query(
-      `CREATE INDEX "IDX_f3e919000f077ec7fa9632434b" ON "barbershop_services" ("servicesId") `,
+      `CREATE INDEX "IDX_fb87c32c2da706981e4353b7a0" ON "barbershop_services" ("serviceId") `,
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_04152bc970f4aef69d46504ae6" ON "barbershop_services" ("barberShopId") `,
     );
     await queryRunner.query(
-      `CREATE TABLE "scheduling_services" ("schedulingId" uuid NOT NULL, "servicesId" uuid NOT NULL, CONSTRAINT "PK_79736fe43adf31041f1e5046ca0" PRIMARY KEY ("schedulingId", "servicesId"))`,
+      `CREATE TABLE "scheduling_services" ("schedulingId" uuid NOT NULL, "serviceId" uuid NOT NULL, CONSTRAINT "PK_c2260441ec48728ee57f7ef847c" PRIMARY KEY ("schedulingId", "serviceId"))`,
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_6f87620f6e30d98e802f67b49d" ON "scheduling_services" ("schedulingId") `,
     );
     await queryRunner.query(
-      `CREATE INDEX "IDX_94f8861b25d0abd3810ab6c27e" ON "scheduling_services" ("servicesId") `,
+      `CREATE INDEX "IDX_990fb8d98c937fc73d2adb4529" ON "scheduling_services" ("serviceId") `,
     );
     await queryRunner.query(
       `CREATE TABLE "barbershop_barbers" ("barberShopId" uuid NOT NULL, "barberId" uuid NOT NULL, CONSTRAINT "PK_ad2d74688b7bfda7e1eea38403e" PRIMARY KEY ("barberShopId", "barberId"))`,
@@ -59,7 +59,7 @@ export class Migration1723928139179 implements MigrationInterface {
       `ALTER TABLE "scheduling" ADD CONSTRAINT "FK_843feaec9e559db38215f0212c9" FOREIGN KEY ("barberId") REFERENCES "barber"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
-      `ALTER TABLE "barbershop_services" ADD CONSTRAINT "FK_f3e919000f077ec7fa9632434b6" FOREIGN KEY ("servicesId") REFERENCES "services"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+      `ALTER TABLE "barbershop_services" ADD CONSTRAINT "FK_fb87c32c2da706981e4353b7a01" FOREIGN KEY ("serviceId") REFERENCES "service"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
     );
     await queryRunner.query(
       `ALTER TABLE "barbershop_services" ADD CONSTRAINT "FK_04152bc970f4aef69d46504ae68" FOREIGN KEY ("barberShopId") REFERENCES "barber_shop"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
@@ -68,7 +68,7 @@ export class Migration1723928139179 implements MigrationInterface {
       `ALTER TABLE "scheduling_services" ADD CONSTRAINT "FK_6f87620f6e30d98e802f67b49d5" FOREIGN KEY ("schedulingId") REFERENCES "scheduling"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
     );
     await queryRunner.query(
-      `ALTER TABLE "scheduling_services" ADD CONSTRAINT "FK_94f8861b25d0abd3810ab6c27e3" FOREIGN KEY ("servicesId") REFERENCES "services"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+      `ALTER TABLE "scheduling_services" ADD CONSTRAINT "FK_990fb8d98c937fc73d2adb4529d" FOREIGN KEY ("serviceId") REFERENCES "service"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "barbershop_barbers" ADD CONSTRAINT "FK_55abf62f0d6fb800d53f65cc449" FOREIGN KEY ("barberShopId") REFERENCES "barber_shop"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
@@ -86,7 +86,7 @@ export class Migration1723928139179 implements MigrationInterface {
       `ALTER TABLE "barbershop_barbers" DROP CONSTRAINT "FK_55abf62f0d6fb800d53f65cc449"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "scheduling_services" DROP CONSTRAINT "FK_94f8861b25d0abd3810ab6c27e3"`,
+      `ALTER TABLE "scheduling_services" DROP CONSTRAINT "FK_990fb8d98c937fc73d2adb4529d"`,
     );
     await queryRunner.query(
       `ALTER TABLE "scheduling_services" DROP CONSTRAINT "FK_6f87620f6e30d98e802f67b49d5"`,
@@ -95,7 +95,7 @@ export class Migration1723928139179 implements MigrationInterface {
       `ALTER TABLE "barbershop_services" DROP CONSTRAINT "FK_04152bc970f4aef69d46504ae68"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "barbershop_services" DROP CONSTRAINT "FK_f3e919000f077ec7fa9632434b6"`,
+      `ALTER TABLE "barbershop_services" DROP CONSTRAINT "FK_fb87c32c2da706981e4353b7a01"`,
     );
     await queryRunner.query(
       `ALTER TABLE "scheduling" DROP CONSTRAINT "FK_843feaec9e559db38215f0212c9"`,
@@ -114,7 +114,7 @@ export class Migration1723928139179 implements MigrationInterface {
     );
     await queryRunner.query(`DROP TABLE "barbershop_barbers"`);
     await queryRunner.query(
-      `DROP INDEX "public"."IDX_94f8861b25d0abd3810ab6c27e"`,
+      `DROP INDEX "public"."IDX_990fb8d98c937fc73d2adb4529"`,
     );
     await queryRunner.query(
       `DROP INDEX "public"."IDX_6f87620f6e30d98e802f67b49d"`,
@@ -124,14 +124,14 @@ export class Migration1723928139179 implements MigrationInterface {
       `DROP INDEX "public"."IDX_04152bc970f4aef69d46504ae6"`,
     );
     await queryRunner.query(
-      `DROP INDEX "public"."IDX_f3e919000f077ec7fa9632434b"`,
+      `DROP INDEX "public"."IDX_fb87c32c2da706981e4353b7a0"`,
     );
     await queryRunner.query(`DROP TABLE "barbershop_services"`);
     await queryRunner.query(`DROP TABLE "user"`);
     await queryRunner.query(`DROP TABLE "barber_shop"`);
     await queryRunner.query(`DROP TABLE "scheduling"`);
     await queryRunner.query(`DROP TABLE "barber"`);
-    await queryRunner.query(`DROP TABLE "services"`);
-    await queryRunner.query(`DROP TYPE "public"."services_type_enum"`);
+    await queryRunner.query(`DROP TABLE "service"`);
+    await queryRunner.query(`DROP TYPE "public"."service_type_enum"`);
   }
 }

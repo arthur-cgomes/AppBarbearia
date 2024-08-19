@@ -22,15 +22,15 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { DeleteResponseDto } from 'src/common/dto/delete-response.dto';
-import { CreateServiceDto } from './dto/create-services.dto';
-import { GetAllServicesResponseDto } from './dto/get-all-services.dto';
-import { ServicesDto } from './dto/services.dto';
-import { UpdateServiceDto } from './dto/update-services.dto';
-import { ServicesService } from './services.service';
+import { CreateServiceDto } from './dto/create-service.dto';
+import { GetAllServicesResponseDto } from './dto/get-all-service.dto';
+import { ServicesDto } from './dto/service.dto';
+import { UpdateServiceDto } from './dto/update-service.dto';
+import { ServicesService } from './service.service';
 
 @ApiBearerAuth()
-@ApiTags('Services')
-@Controller('services')
+@ApiTags('Service')
+@Controller('service')
 export class ServicesController {
   constructor(private readonly servicesService: ServicesService) {}
 
@@ -83,18 +83,24 @@ export class ServicesController {
   })
   @ApiQuery({ name: 'take', required: false })
   @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'sort', required: false })
+  @ApiQuery({ name: 'order', required: false })
   @ApiQuery({ name: 'barberShopId', required: false })
   @ApiQuery({ name: 'search', required: false })
   @ApiOkResponse({ type: GetAllServicesResponseDto })
   async getAllServices(
     @Query('take') take = 10,
     @Query('skip') skip = 0,
+    @Query('sort') sort = 'name',
+    @Query('order') order: 'ASC' | 'DESC' = 'ASC',
     @Query('barberShopId') barberShopId?: string,
     @Query('search') search?: string,
   ) {
     return await this.servicesService.getAllServices(
       take,
       skip,
+      sort,
+      order,
       barberShopId,
       search,
     );

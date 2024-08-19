@@ -58,12 +58,17 @@ export class BarberService {
   public async getAllBarbers(
     take: number,
     skip: number,
+    sort: string,
+    order: 'ASC' | 'DESC',
     barbershopId?: string,
     search?: string,
   ): Promise<GetAllBarbersResponseDto> {
     const conditions: FindManyOptions<Barber> = {
       take,
       skip,
+      order: {
+        [sort]: order,
+      },
     };
 
     if (barbershopId) {

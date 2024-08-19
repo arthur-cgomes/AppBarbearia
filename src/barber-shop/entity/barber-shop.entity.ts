@@ -12,7 +12,7 @@ import {
 import { BaseCollection } from '../../common/entity/base.entity';
 import { Scheduling } from '../../scheduling/entity/scheduling.entity';
 import { Barber } from '../../barber/entity/barber.entity';
-import { Services } from '../../services/entity/services.entity';
+import { Service } from '../../service/entity/service.entity';
 
 @Entity()
 export class BarberShop extends BaseCollection {
@@ -89,11 +89,11 @@ export class BarberShop extends BaseCollection {
 
   @ApiProperty({
     description: 'Relacionamento com a tabela Services',
-    type: () => Services,
+    type: () => Service,
     isArray: true,
   })
-  @ManyToMany(() => Services, (services) => services.barberShop)
-  services: Services[];
+  @ManyToMany(() => Service, (services) => services.barberShop)
+  services: Service[];
 
   @BeforeInsert()
   @BeforeUpdate()

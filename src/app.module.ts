@@ -5,7 +5,7 @@ import { config } from 'dotenv';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { ServicesModule } from './services/services.module';
+import { ServicesModule } from './service/service.module';
 import { SchedulingModule } from './scheduling/scheduling.module';
 import { BarberModule } from './barber/barber.module';
 

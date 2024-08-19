@@ -1,8 +1,8 @@
 import { ServiceType } from '../../../common/enum/service-type.enum';
-import { Services } from '../../entity/services.entity';
+import { Service } from '../../entity/service.entity';
 
 export const mockService = {
   name: 'name',
   type: ServiceType.HAIR,
   value: 'value',
-} as Services;
+} as Service;

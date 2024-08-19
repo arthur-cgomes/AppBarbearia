@@ -80,18 +80,24 @@ export class BarberController {
   })
   @ApiQuery({ name: 'take', required: false })
   @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'sort', required: false })
+  @ApiQuery({ name: 'order', required: false })
   @ApiQuery({ name: 'barbershopId', required: false })
   @ApiQuery({ name: 'search', required: false })
   @ApiOkResponse({ type: GetAllBarbersResponseDto })
   async getAllBarbers(
     @Query('take') take = 10,
     @Query('skip') skip = 0,
+    @Query('sort') sort = 'name',
+    @Query('order') order: 'ASC' | 'DESC' = 'ASC',
     @Query('barbershopId') barbershopId?: string,
     @Query('search') search?: string,
   ) {
     return await this.barberService.getAllBarbers(
       take,
       skip,
+      sort,
+      order,
       barbershopId,
       search,
     );

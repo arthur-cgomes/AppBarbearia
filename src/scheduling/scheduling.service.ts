@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BarberShopService } from '../barber-shop/barber-shop.service';
-import { ServicesService } from '../services/services.service';
+import { ServicesService } from '../service/service.service';
 import { UserService } from '../user/user.service';
 import { FindManyOptions, Repository } from 'typeorm';
 import { Scheduling } from './entity/scheduling.entity';
@@ -89,6 +89,8 @@ export class SchedulingService {
   public async getAllSchedulings(
     take: number,
     skip: number,
+    sort: string,
+    order: 'ASC' | 'DESC',
     userId?: string,
     barberId?: string,
     barberShopId?: string,
@@ -96,6 +98,9 @@ export class SchedulingService {
     const conditions: FindManyOptions<Scheduling> = {
       take,
       skip,
+      order: {
+        [sort]: order,
+      },
     };
 
     if (userId) {

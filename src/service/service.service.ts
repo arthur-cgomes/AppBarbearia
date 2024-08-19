@@ -5,26 +5,26 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
-import { CreateServiceDto } from './dto/create-services.dto';
-import { GetAllServicesResponseDto } from './dto/get-all-services.dto';
-import { UpdateServiceDto } from './dto/update-services.dto';
-import { Services } from './entity/services.entity';
+import { CreateServiceDto } from './dto/create-service.dto';
+import { GetAllServicesResponseDto } from './dto/get-all-service.dto';
+import { UpdateServiceDto } from './dto/update-service.dto';
+import { Service } from './entity/service.entity';
 
 @Injectable()
 export class ServicesService {
   constructor(
-    @InjectRepository(Services)
-    private readonly servicesRepository: Repository<Services>,
+    @InjectRepository(Service)
+    private readonly servicesRepository: Repository<Service>,
   ) {}
 
   public async createService(
     createServiceDto: CreateServiceDto,
-  ): Promise<Services> {
+  ): Promise<Service> {
     const chekService = await this.servicesRepository.findOne({
-      where: {
-        name: createServiceDto.name,
-        barberShop: { id: createServiceDto.barberShopId },
-      },
+      where: [
+        { name: createServiceDto.name },
+        { barberShop: { id: createServiceDto.barberShopId } },
+      ],
     });
 
     if (chekService) {
@@ -37,7 +37,7 @@ export class ServicesService {
   public async updateService(
     serviceId: string,
     updateServiceDto: UpdateServiceDto,
-  ): Promise<Services> {
+  ): Promise<Service> {
     await this.getServiceById(serviceId);
 
     return await (
@@ -48,10 +48,9 @@ export class ServicesService {
     ).save();
   }
 
-  public async getServiceById(serviceId: string): Promise<Services> {
+  public async getServiceById(serviceId: string): Promise<Service> {
     const service = await this.servicesRepository.findOne({
       where: { id: serviceId },
-      relations: ['barberShop'],
     });
 
     if (!service) throw new NotFoundException('service with this id not found');
@@ -62,12 +61,17 @@ export class ServicesService {
   public async getAllServices(
     take: number,
     skip: number,
+    sort: string,
+    order: 'ASC' | 'DESC',
     barberShopId?: string,
     search?: string,
   ): Promise<GetAllServicesResponseDto> {
-    const conditions: FindManyOptions<Services> = {
+    const conditions: FindManyOptions<Service> = {
       take,
       skip,
+      order: {
+        [sort]: order,
+      },
       where: {},
     };
 

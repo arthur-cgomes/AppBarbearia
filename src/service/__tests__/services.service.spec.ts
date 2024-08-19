@@ -5,10 +5,10 @@ import {
   repositoryMockFactory,
 } from '../../common/mock/test.util';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
-import { Services } from '../entity/services.entity';
-import { ServicesService } from '../services.service';
+import { Services } from '../entity/service.entity';
+import { ServicesService } from '../service.service';
 import { ConflictException, NotFoundException } from '@nestjs/common';
-import { UpdateServiceDto } from '../dto/update-services.dto';
+import { UpdateServiceDto } from '../dto/update-service.dto';
 import { ServiceType } from '../../common/enum/service-type.enum';
 import { mockService } from './mocks/service.mock';
 

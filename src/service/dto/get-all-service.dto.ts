@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Services } from '../entity/services.entity';
+import { Service } from '../entity/service.entity';
 
 export class GetAllServicesResponseDto {
   @ApiProperty({
@@ -17,9 +17,9 @@ export class GetAllServicesResponseDto {
   skip: number | null;
 
   @ApiProperty({
-    type: Services,
+    type: Service,
     isArray: true,
     description: 'A lista de serviços',
   })
-  services: Services[];
+  services: Service[];
 }

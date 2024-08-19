@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Scheduling } from './entity/scheduling.entity';
 import { UserModule } from '../user/user.module';
 import { BarberShopModule } from '../barber-shop/barber-shop.module';
-import { ServicesModule } from '../services/services.module';
+import { ServicesModule } from '../service/service.module';
 import { BarberModule } from 'src/barber/barber.module';
 import { PassportModule } from '@nestjs/passport';
 

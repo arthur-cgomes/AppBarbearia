@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseCollection } from '../../common/entity/base.entity';
-import { Services } from '../../services/entity/services.entity';
+import { Service } from '../../service/entity/service.entity';
 import { User } from '../../user/entity/user.entity';
 import { Barber } from '../../barber/entity/barber.entity';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
@@ -38,9 +38,9 @@ export class Scheduling extends BaseCollection {
 
   @ApiProperty({
     description: 'Relacionamento com a tabela Services',
-    type: () => Services,
+    type: () => Service,
   })
-  @ManyToMany(() => Services, (service) => service.scheduling)
+  @ManyToMany(() => Service, (service) => service.scheduling)
   @JoinTable({ name: 'scheduling_services' })
-  services: Services[];
+  services: Service[];
 }

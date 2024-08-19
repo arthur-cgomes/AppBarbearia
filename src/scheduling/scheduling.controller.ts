@@ -85,6 +85,8 @@ export class SchedulingController {
   })
   @ApiQuery({ name: 'take', required: false })
   @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'sort', required: false })
+  @ApiQuery({ name: 'order', required: false })
   @ApiQuery({ name: 'userId', required: false })
   @ApiQuery({ name: 'barberId', required: false })
   @ApiQuery({ name: 'barberShopId', required: false })
@@ -92,6 +94,8 @@ export class SchedulingController {
   async getAllUsers(
     @Query('take') take = 10,
     @Query('skip') skip = 0,
+    @Query('sort') sort = 'name',
+    @Query('order') order: 'ASC' | 'DESC' = 'ASC',
     @Query('userId') userId?: string,
     @Query('barberId') barberId?: string,
     @Query('barberShopId') barberShopId?: string,
@@ -99,6 +103,8 @@ export class SchedulingController {
     return await this.schedulingService.getAllSchedulings(
       take,
       skip,
+      sort,
+      order,
       userId,
       barberId,
       barberShopId,

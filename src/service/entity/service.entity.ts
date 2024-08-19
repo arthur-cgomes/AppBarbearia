@@ -6,7 +6,7 @@ import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 import { ServiceType } from '../../common/enum/service-type.enum';
 
 @Entity()
-export class Services extends BaseCollection {
+export class Service extends BaseCollection {
   @ApiProperty({
     description: 'Nome do serviço',
     type: String,

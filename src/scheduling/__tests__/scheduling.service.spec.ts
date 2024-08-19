@@ -10,10 +10,10 @@ import { SchedulingService } from '../scheduling.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserService } from '../../user/user.service';
 import { BarberShopService } from '../../barber-shop/barber-shop.service';
-import { ServicesService } from '../../services/services.service';
+import { ServicesService } from '../../service/service.service';
 import { User } from '../../user/entity/user.entity';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
-import { Services } from '../../services/entity/services.entity';
+import { Services } from '../../service/entity/service.entity';
 import { UpdateSchedulingDto } from '../dto/update-scheduling.dto';
 import { Barber } from '../../barber/entity/barber.entity';
 import { CreateSchedulingDto } from '../dto/create-scheduling.dto';
@@ -25,7 +25,7 @@ import { mockScheduling } from './mocks/scheduling.mock';
 import { mockUser } from '../../auth/__tests__/mocks/auth.mock';
 import { mockBarberShop } from '../../barber-shop/__tests__/mocks/barbershop.mock';
 import { mockBarber } from '../../barber/__tests__/mocks/barber.mock';
-import { mockService } from '../../services/__tests__/mocks/service.mock';
+import { mockService } from '../../service/__tests__/mocks/service.mock';
 
 describe('SchedulingService', () => {
   let service: SchedulingService;
