@@ -1,20 +1,45 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Max } from 'class-validator';
 
 export class CreateBarberDto {
-  @ApiProperty({ type: String })
+  @ApiProperty({
+    description: 'Nome do barbeiro',
+    type: String,
+  })
   @IsNotEmpty()
-  cpf: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
+  @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'CPF do barbeiro',
+    type: String,
+  })
+  @IsNotEmpty()
+  @IsString()
+  @Max(11)
+  document: string;
+
+  @ApiProperty({
+    description: 'Email do barbeiro',
+    type: String,
+  })
+  @IsNotEmpty()
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Número de celular do barbeiro',
+    type: String,
+  })
   @IsNotEmpty()
-  phone: string;
+  @IsString()
+  cellphone: string;
+
+  @ApiProperty({
+    description: 'Id da barbearia',
+    type: String,
+  })
+  @IsNotEmpty()
+  @IsString()
+  barbershopId: string;
 }

@@ -1,33 +1,46 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseCollection } from '../../common/entity/base.entity';
-import { Services } from '../../services/entity/services.entity';
+import { Service } from '../../service/entity/service.entity';
 import { User } from '../../user/entity/user.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
-import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
-import { IsNotEmpty } from 'class-validator';
 import { Barber } from '../../barber/entity/barber.entity';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 
 @Entity()
 export class Scheduling extends BaseCollection {
-  @ApiProperty()
-  @IsNotEmpty()
-  @Column({ name: 'scheduling', type: 'timestamp' })
+  @ApiProperty({
+    description: 'Data e hora do agendamento',
+    type: Date,
+  })
+  @Column({ type: 'timestamp', default: null, nullable: true })
   date: Date;
 
-  @ApiProperty({ type: () => User })
-  @IsNotEmpty()
+  @ApiProperty({
+    description: 'Relacionamento com a tabela User',
+    type: () => User,
+  })
   @ManyToOne(() => User, (user) => user.schedulings)
   user: User;
 
-  @ApiProperty({ type: () => BarberShop })
+  @ApiProperty({
+    description: 'Relacionamento com a tabela BarberShop',
+    type: () => BarberShop,
+  })
   @ManyToOne(() => BarberShop, (barbershop) => barbershop.scheduling)
-  barbershops: BarberShop;
+  barbershop: BarberShop;
 
-  @ApiProperty({ type: () => Barber })
-  @ManyToOne(() => Barber, (barber) => barber.scheduling)
+  @ApiProperty({
+    description: 'Relacionamento com a tabela Barber',
+    type: () => Barber,
+  })
+  @ManyToOne(() => Barber, (barber) => barber.schedulings)
   barber: Barber;
 
-  @ApiProperty({ type: () => Services })
-  @ManyToOne(() => Services, (service) => service.schedulings)
-  services: Services;
+  @ApiProperty({
+    description: 'Relacionamento com a tabela Services',
+    type: () => Service,
+  })
+  @ManyToMany(() => Service, (service) => service.scheduling)
+  @JoinTable({ name: 'scheduling_services' })
+  services: Service[];
 }

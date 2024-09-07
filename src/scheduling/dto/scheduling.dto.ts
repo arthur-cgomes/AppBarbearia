@@ -3,7 +3,6 @@ import { Scheduling } from '../entity/scheduling.entity';
 
 export class SchedulingDto extends OmitType(Scheduling, [
   'user',
-  'barbershops',
+  'barbershop',
   'services',
-  'barber',
 ]) {}

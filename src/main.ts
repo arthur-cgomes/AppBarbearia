@@ -1,27 +1,33 @@
-import { ValidationPipe } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const packageFile = require('../package.json');
-import './envs';
+
+const version = require('../package.json').version;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const config = new DocumentBuilder()
-    .setTitle(`AppBarbearia`)
-    .setDescription('Back-end do projeto AppBarbearia')
-    .setVersion(packageFile.version)
+  app.enableCors({
+    origin: '*',
+  });
+
+  const options = new DocumentBuilder()
+    .setTitle(`💈App Barbearia`)
+    .setDescription('Back-end do projeto App Barbearia')
+    .setVersion(version)
     .addBearerAuth()
     .addTag('Endpoints:')
     .build();
 
-  app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
+  const PORT = Number(process.env.PORT) || 3000;
 
-  await app.listen(3000);
+  await app.listen(PORT, '0.0.0.0');
+  console.log(
+    `💈app barbearia is in ${process.env.NODE_ENV} mode and is listening on port:`,
+    PORT,
+  );
 }
 bootstrap();

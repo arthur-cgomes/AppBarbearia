@@ -1,6 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class DeleteResponseDto {
-  @ApiProperty({ example: 'removed' })
+  @ApiProperty({
+    description: 'Retorno padrão',
+    type: String,
+    example: 'removed',
+  })
   message: string;
 }

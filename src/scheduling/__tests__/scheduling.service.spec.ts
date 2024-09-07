@@ -3,24 +3,27 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   MockRepository,
   repositoryMockFactory,
-} from '../../utils/mock/test.util';
+} from '../../common/mock/test.util';
 import { FindManyOptions, Repository } from 'typeorm';
 import { Scheduling } from '../entity/scheduling.entity';
 import { SchedulingService } from '../scheduling.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserService } from '../../user/user.service';
 import { BarberShopService } from '../../barber-shop/barber-shop.service';
-import { ServicesService } from '../../services/services.service';
+import { ServicesService } from '../../service/service.service';
 import { User } from '../../user/entity/user.entity';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
-import { Services } from '../../services/entity/services.entity';
+import { Service } from '../../service/entity/service.entity';
 import { UpdateSchedulingDto } from '../dto/update-scheduling.dto';
 import { Barber } from '../../barber/entity/barber.entity';
 import { CreateSchedulingDto } from '../dto/create-scheduling.dto';
 import { BarberService } from '../../barber/barber.service';
-import { UserTypeService } from '../../user-type/user-type.service';
-import { UserType } from '../../user-type/entity/user-type.entity';
 import { ConflictException } from '@nestjs/common/exceptions';
+import { mockScheduling } from './mocks/scheduling.mock';
+import { mockUser } from '../../auth/__tests__/mocks/auth.mock';
+import { mockBarberShop } from '../../barber-shop/__tests__/mocks/barbershop.mock';
+import { mockBarber } from '../../barber/__tests__/mocks/barber.mock';
+import { mockService } from '../../service/__tests__/mocks/service.mock';
 
 describe('SchedulingService', () => {
   let service: SchedulingService;
@@ -44,11 +47,6 @@ describe('SchedulingService', () => {
           provide: getRepositoryToken(User),
           useValue: repositoryMockFactory<User>(),
         },
-        UserTypeService,
-        {
-          provide: getRepositoryToken(UserType),
-          useValue: repositoryMockFactory<UserType>(),
-        },
         BarberShopService,
         {
           provide: getRepositoryToken(BarberShop),
@@ -61,8 +59,8 @@ describe('SchedulingService', () => {
         },
         ServicesService,
         {
-          provide: getRepositoryToken(Services),
-          useValue: repositoryMockFactory<Services>(),
+          provide: getRepositoryToken(Service),
+          useValue: repositoryMockFactory<Service>(),
         },
       ],
     }).compile();
@@ -78,44 +76,6 @@ describe('SchedulingService', () => {
 
   beforeEach(() => jest.clearAllMocks());
 
-  const user: User = {
-    id: '12313123-123123a-abcde',
-    email: 'email@teste.com.br',
-    name: 'Arthur Gomes',
-    birthDate: new Date(),
-    phone: '(99)12341-2222',
-  } as User;
-
-  const barbershops: BarberShop = {
-    id: '12314-121454-ç687ih',
-    name: 'Teste',
-    active: true,
-  } as BarberShop;
-
-  const barber: Barber = {
-    id: '12314-121454-ç687ih',
-    name: 'name',
-    cpf: 'cpf',
-    email: 'email',
-    phone: 'phone',
-  } as Barber;
-
-  const services: Services = {
-    id: 'e2f390e3-f989-4abd-9a6f-e7679d6d9278',
-    name: 'name',
-    type: 'type',
-    value: 'value',
-  } as Services;
-
-  const scheduling: Scheduling = {
-    id: '12314-121454-ç687ih',
-    date: new Date(),
-    user,
-    barbershops,
-    barber,
-    services,
-  } as Scheduling;
-
   describe('createScheduling', () => {
     const createSchedulingDto: CreateSchedulingDto = {
       userId: 'userId',
@@ -129,24 +89,27 @@ describe('SchedulingService', () => {
       repositoryMock.findOne = jest.fn();
       repositoryMock.create = jest
         .fn()
-        .mockReturnValue({ save: () => scheduling });
+        .mockReturnValue({ save: () => mockScheduling });
 
-      jest.spyOn(userService, 'getUserById').mockResolvedValue(user);
+      jest.spyOn(userService, 'getUserById').mockResolvedValue(mockUser);
       jest
         .spyOn(barberShopService, 'getBarberShopById')
-        .mockResolvedValue(barbershops);
-      jest.spyOn(barberService, 'getBarberById').mockResolvedValue(barber);
-      jest.spyOn(servicesService, 'getServiceById').mockResolvedValue(services);
+        .mockResolvedValue(mockBarberShop);
+      jest.spyOn(barberService, 'getBarberById').mockResolvedValue(mockBarber);
+      jest
+        .spyOn(servicesService, 'getServiceById')
+        .mockResolvedValue(mockService);
 
       const result = await service.createScheduling(createSchedulingDto);
 
-      expect(result).toEqual(scheduling);
+      expect(result).toEqual(mockScheduling);
+
       expect(repositoryMock.create).toHaveBeenCalledWith({
-        ...createSchedulingDto,
-        user,
-        barbershops,
-        barber,
-        services,
+        user: mockUser,
+        barbershop: mockBarberShop,
+        barber: mockBarber,
+        services: [mockService],
+        date: createSchedulingDto.date,
       });
     });
 
@@ -168,7 +131,7 @@ describe('SchedulingService', () => {
 
       repositoryMock.findOne = jest.fn();
 
-      jest.spyOn(userService, 'getUserById').mockResolvedValue(user);
+      jest.spyOn(userService, 'getUserById').mockResolvedValue(mockUser);
       jest
         .spyOn(barberShopService, 'getBarberShopById')
         .mockRejectedValue(error);
@@ -184,10 +147,10 @@ describe('SchedulingService', () => {
 
       repositoryMock.findOne = jest.fn();
 
-      jest.spyOn(userService, 'getUserById').mockResolvedValue(user);
+      jest.spyOn(userService, 'getUserById').mockResolvedValue(mockUser);
       jest
         .spyOn(barberShopService, 'getBarberShopById')
-        .mockResolvedValue(barbershops);
+        .mockResolvedValue(mockBarberShop);
       jest.spyOn(barberService, 'getBarberById').mockRejectedValue(error);
 
       await expect(
@@ -201,11 +164,11 @@ describe('SchedulingService', () => {
 
       repositoryMock.findOne = jest.fn();
 
-      jest.spyOn(userService, 'getUserById').mockResolvedValue(user);
+      jest.spyOn(userService, 'getUserById').mockResolvedValue(mockUser);
       jest
         .spyOn(barberShopService, 'getBarberShopById')
-        .mockResolvedValue(barbershops);
-      jest.spyOn(barberService, 'getBarberById').mockResolvedValue(barber);
+        .mockResolvedValue(mockBarberShop);
+      jest.spyOn(barberService, 'getBarberById').mockResolvedValue(mockBarber);
       jest.spyOn(servicesService, 'getServiceById').mockRejectedValue(error);
 
       await expect(
@@ -217,7 +180,7 @@ describe('SchedulingService', () => {
     it('Should throw the ConflictException exception when scheduling time not available', async () => {
       const error = new ConflictException('time not available');
 
-      repositoryMock.findOne = jest.fn().mockReturnValue(scheduling);
+      repositoryMock.findOne = jest.fn().mockReturnValue(mockScheduling);
 
       await expect(
         service.createScheduling(createSchedulingDto),
@@ -234,30 +197,30 @@ describe('SchedulingService', () => {
     };
 
     it('Should successfully update a scheduling', async () => {
-      repositoryMock.findOne = jest.fn().mockReturnValue(scheduling);
+      repositoryMock.findOne = jest.fn().mockReturnValue(mockScheduling);
       repositoryMock.preload = jest
         .fn()
-        .mockReturnValue({ save: () => scheduling });
+        .mockReturnValue({ save: () => mockScheduling });
 
       const result = await service.updateScheduling(
-        scheduling.id,
+        mockScheduling.id,
         updateSchedulingDto,
       );
 
-      expect(result).toStrictEqual(scheduling);
+      expect(result).toStrictEqual(mockScheduling);
       expect(repositoryMock.preload).toHaveBeenCalledWith({
-        id: scheduling.id,
+        id: mockScheduling.id,
         ...updateSchedulingDto,
       });
     });
 
     it('Should throw the NotFoundException exception when scheduling not found', async () => {
-      const error = new NotFoundException('scheduling not found');
+      const error = new NotFoundException('scheduling with this id not found');
 
       repositoryMock.findOne = jest.fn();
 
       await expect(
-        service.updateScheduling(scheduling.id, updateSchedulingDto),
+        service.updateScheduling(mockScheduling.id, updateSchedulingDto),
       ).rejects.toStrictEqual(error);
       expect(repositoryMock.preload).not.toHaveBeenCalled();
     });
@@ -265,11 +228,11 @@ describe('SchedulingService', () => {
 
   describe('getSchedulingById', () => {
     it('Should successfully get scheduling by id', async () => {
-      repositoryMock.findOne = jest.fn().mockReturnValue(scheduling);
+      repositoryMock.findOne = jest.fn().mockReturnValue(mockScheduling);
 
-      const result = await service.getSchedulingById(scheduling.id);
+      const result = await service.getSchedulingById(mockScheduling.id);
 
-      expect(result).toStrictEqual(scheduling);
+      expect(result).toStrictEqual(mockScheduling);
     });
 
     it('Should throw the NotFoundException exception scheduling not found', async () => {
@@ -278,97 +241,167 @@ describe('SchedulingService', () => {
       repositoryMock.findOne = jest.fn();
 
       await expect(
-        service.getSchedulingById(scheduling.id),
+        service.getSchedulingById(mockScheduling.id),
       ).rejects.toStrictEqual(error);
     });
   });
 
-  describe('getAllScheduling', () => {
-    it('Should successfully get all a scheduling', async () => {
+  describe('getAllSchedulings', () => {
+    it('Should successfully get all schedulings', async () => {
       const take = 1;
       const skip = 0;
+      const sort = 'date';
+      const order = 'ASC';
+
       const conditions: FindManyOptions<Scheduling> = {
         take,
         skip,
+        order: {
+          [sort]: order,
+        },
       };
       repositoryMock.findAndCount = jest
         .fn()
-        .mockReturnValue([[scheduling], 10]);
+        .mockReturnValue([[mockScheduling], 10]);
 
-      const result = await service.getAllScheduling(take, skip, null, null);
+      const result = await service.getAllSchedulings(take, skip, sort, order);
+
       expect(result).toStrictEqual({
         skip: 1,
         total: 10,
-        schedulings: [scheduling],
+        schedulings: [mockScheduling],
       });
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
     });
 
-    it('Should successfully get all scheduling with userId', async () => {
+    it('Should successfully get all schedulings with userId', async () => {
       const userId = 'userId';
       const take = 10;
       const skip = 0;
+      const sort = 'date';
+      const order = 'ASC';
+
       const conditions: FindManyOptions<Scheduling> = {
         take,
         skip,
+        order: {
+          [sort]: order,
+        },
         where: { id: userId },
       };
 
       repositoryMock.findAndCount = jest
         .fn()
-        .mockReturnValue([[scheduling], 10]);
+        .mockReturnValue([[mockScheduling], 10]);
 
-      const result = await service.getAllScheduling(take, skip, userId, null);
-
-      expect(result).toStrictEqual({
-        skip: null,
-        total: 10,
-        schedulings: [scheduling],
-      });
-      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
-    });
-
-    it('Should successfully get all scheduling with schedulingId', async () => {
-      const schedulingId = 'schedulingId';
-      const take = 10;
-      const skip = 0;
-      const conditions: FindManyOptions<Scheduling> = {
+      const result = await service.getAllSchedulings(
         take,
         skip,
-        where: { id: schedulingId },
-      };
-
-      repositoryMock.findAndCount = jest
-        .fn()
-        .mockReturnValue([[scheduling], 10]);
-
-      const result = await service.getAllScheduling(
-        take,
-        skip,
-        null,
-        schedulingId,
+        sort,
+        order,
+        userId,
       );
 
       expect(result).toStrictEqual({
         skip: null,
         total: 10,
-        schedulings: [scheduling],
+        schedulings: [mockScheduling],
       });
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
     });
 
-    it('Should successfully return an empty list of scheduling', async () => {
+    it('Should successfully get all schedulings with barberId', async () => {
+      const barberId = 'barberId';
       const take = 10;
-      const skip = 10;
+      const skip = 0;
+      const sort = 'date';
+      const order = 'ASC';
 
       const conditions: FindManyOptions<Scheduling> = {
         take,
         skip,
+        order: {
+          [sort]: order,
+        },
+        where: { barber: { id: barberId } },
+      };
+
+      repositoryMock.findAndCount = jest
+        .fn()
+        .mockReturnValue([[mockScheduling], 10]);
+
+      const result = await service.getAllSchedulings(
+        take,
+        skip,
+        sort,
+        order,
+        null,
+        barberId,
+      );
+
+      expect(result).toStrictEqual({
+        skip: null,
+        total: 10,
+        schedulings: [mockScheduling],
+      });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
+
+    it('Should successfully get all schedulings with barberShopId', async () => {
+      const barberShopId = 'barberShopId';
+      const take = 10;
+      const skip = 0;
+      const sort = 'date';
+      const order = 'ASC';
+
+      const conditions: FindManyOptions<Scheduling> = {
+        take,
+        skip,
+        order: {
+          [sort]: order,
+        },
+        where: { barbershop: { id: barberShopId } },
+      };
+
+      repositoryMock.findAndCount = jest
+        .fn()
+        .mockReturnValue([[mockScheduling], 10]);
+
+      const result = await service.getAllSchedulings(
+        take,
+        skip,
+        sort,
+        order,
+        null,
+        null,
+        barberShopId,
+      );
+
+      expect(result).toStrictEqual({
+        skip: null,
+        total: 10,
+        schedulings: [mockScheduling],
+      });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
+
+    it('Should successfully return an empty list of schedulings', async () => {
+      const take = 10;
+      const skip = 10;
+      const sort = 'date';
+      const order = 'ASC';
+
+      const conditions: FindManyOptions<Scheduling> = {
+        take,
+        skip,
+        order: {
+          [sort]: order,
+        },
       };
 
       repositoryMock.findAndCount = jest.fn().mockReturnValue([[], 0]);
 
-      const result = await service.getAllScheduling(take, skip, null, null);
+      const result = await service.getAllSchedulings(take, skip, sort, order);
 
       expect(result).toStrictEqual({
         skip: null,
@@ -377,14 +410,70 @@ describe('SchedulingService', () => {
       });
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
     });
+
+    it('Should set skip to null when no more results are available', async () => {
+      const take = 5;
+      const skip = 5;
+      const sort = 'date';
+      const order = 'ASC';
+
+      const conditions: FindManyOptions<Scheduling> = {
+        take,
+        skip,
+        order: {
+          [sort]: order,
+        },
+      };
+
+      repositoryMock.findAndCount = jest
+        .fn()
+        .mockReturnValue([[mockScheduling], 5]);
+
+      const result = await service.getAllSchedulings(take, skip, sort, order);
+
+      expect(result).toStrictEqual({
+        skip: null,
+        total: 5,
+        schedulings: [mockScheduling],
+      });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
+
+    it('Should increment skip when more results are available', async () => {
+      const take = 5;
+      const skip = 0;
+      const sort = 'date';
+      const order = 'ASC';
+
+      const conditions: FindManyOptions<Scheduling> = {
+        take,
+        skip,
+        order: {
+          [sort]: order,
+        },
+      };
+
+      repositoryMock.findAndCount = jest
+        .fn()
+        .mockReturnValue([[mockScheduling], 15]);
+
+      const result = await service.getAllSchedulings(take, skip, sort, order);
+
+      expect(result).toStrictEqual({
+        skip: 5,
+        total: 15,
+        schedulings: [mockScheduling],
+      });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
   });
 
-  describe('deleteScheduling', () => {
+  describe('deleteSchedulingById', () => {
     it('Should successfully delete a scheduling', async () => {
-      repositoryMock.findOne = jest.fn().mockReturnValue(scheduling);
+      repositoryMock.findOne = jest.fn().mockReturnValue(mockScheduling);
       repositoryMock.remove = jest.fn();
 
-      const result = await service.deleteScheduling(scheduling.id);
+      const result = await service.deleteSchedulingById(mockScheduling.id);
 
       expect(result).toStrictEqual('removed');
     });
@@ -395,7 +484,7 @@ describe('SchedulingService', () => {
       repositoryMock.findOne = jest.fn();
 
       await expect(
-        service.deleteScheduling(scheduling.id),
+        service.deleteSchedulingById(mockScheduling.id),
       ).rejects.toStrictEqual(error);
     });
   });

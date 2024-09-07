@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BarberShopService } from '../barber-shop/barber-shop.service';
-import { ServicesService } from '../services/services.service';
+import { ServicesService } from '../service/service.service';
 import { UserService } from '../user/user.service';
 import { FindManyOptions, Repository } from 'typeorm';
 import { Scheduling } from './entity/scheduling.entity';
@@ -28,49 +28,33 @@ export class SchedulingService {
   public async createScheduling(
     createSchedulingDto: CreateSchedulingDto,
   ): Promise<Scheduling> {
-    const user = await this.userService.getUserById(createSchedulingDto.userId);
-    if (!user) {
-      throw new NotFoundException('user not found');
-    }
-
-    const barbershop = await this.barbershopService.getBarberShopById(
-      createSchedulingDto.barberShopId,
-    );
-    if (!barbershop) {
-      throw new NotFoundException('barberShop not found');
-    }
-
-    const barber = await this.barberService.getBarberById(
-      createSchedulingDto.barberId,
-    );
-    if (!barber) {
-      throw new NotFoundException('barber not found');
-    }
-
-    const service = await this.servicesService.getServiceById(
-      createSchedulingDto.serviceId,
-    );
-    if (!service) {
-      throw new NotFoundException('service not found');
-    }
+    const [user, barbershop, barber, service] = await Promise.all([
+      this.userService.getUserById(createSchedulingDto.userId),
+      this.barbershopService.getBarberShopById(
+        createSchedulingDto.barberShopId,
+      ),
+      this.barberService.getBarberById(createSchedulingDto.barberId),
+      this.servicesService.getServiceById(createSchedulingDto.serviceId),
+    ]);
 
     const checkScheduling = await this.schedulingRepository.findOne({
       where: [
         {
           date: createSchedulingDto.date,
-          barbershops: { id: createSchedulingDto.barberShopId },
+          barbershop: { id: createSchedulingDto.barberShopId },
         },
       ],
     });
+
     if (checkScheduling) {
       throw new ConflictException('time not available');
     }
 
     const scheduling = new Scheduling();
     scheduling.user = user;
-    scheduling.barbershops = barbershop;
+    scheduling.barbershop = barbershop;
     scheduling.barber = barber;
-    scheduling.services = service;
+    scheduling.services = [service];
     scheduling.date = createSchedulingDto.date;
 
     return await this.schedulingRepository.create(scheduling).save();
@@ -80,17 +64,11 @@ export class SchedulingService {
     schedulingId: string,
     updateSchedulingDto: UpdateSchedulingDto,
   ): Promise<Scheduling> {
-    const scheduling = await this.schedulingRepository.findOne({
-      where: { id: schedulingId },
-    });
-
-    if (!scheduling) {
-      throw new NotFoundException('scheduling not found');
-    }
+    await this.getSchedulingById(schedulingId);
 
     return await (
       await this.schedulingRepository.preload({
-        id: scheduling.id,
+        id: schedulingId,
         ...updateSchedulingDto,
       })
     ).save();
@@ -108,28 +86,37 @@ export class SchedulingService {
     return scheduling;
   }
 
-  public async getAllScheduling(
+  public async getAllSchedulings(
     take: number,
     skip: number,
+    sort: string,
+    order: 'ASC' | 'DESC',
     userId?: string,
-    schedulingId?: string,
+    barberId?: string,
+    barberShopId?: string,
   ): Promise<GetAllSchedulingResponseDto> {
     const conditions: FindManyOptions<Scheduling> = {
       take,
       skip,
+      order: {
+        [sort]: order,
+      },
     };
 
     if (userId) {
       conditions.where = { id: userId };
     }
 
-    if (schedulingId) {
-      conditions.where = { id: schedulingId };
+    if (barberId) {
+      conditions.where = { barber: { id: barberId } };
     }
 
-    const [scheduling, count] = await this.schedulingRepository.findAndCount(
-      conditions,
-    );
+    if (barberShopId) {
+      conditions.where = { barbershop: { id: barberShopId } };
+    }
+
+    const [scheduling, count] =
+      await this.schedulingRepository.findAndCount(conditions);
 
     if (scheduling.length == 0) {
       return { skip: null, total: 0, schedulings: [] };
@@ -140,15 +127,8 @@ export class SchedulingService {
     return { skip, total: count, schedulings: scheduling };
   }
 
-  public async deleteScheduling(schedulingId: string): Promise<string> {
-    const deleteScheduling = await this.schedulingRepository.findOne({
-      where: { id: schedulingId },
-    });
-
-    if (!deleteScheduling) {
-      throw new NotFoundException('scheduling with this id not found');
-    }
-
+  public async deleteSchedulingById(schedulingId: string): Promise<string> {
+    const deleteScheduling = await this.getSchedulingById(schedulingId);
     await this.schedulingRepository.remove(deleteScheduling);
 
     return 'removed';

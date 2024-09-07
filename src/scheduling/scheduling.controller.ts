@@ -30,7 +30,7 @@ import { SchedulingService } from './scheduling.service';
 
 @ApiBearerAuth()
 @ApiTags('Scheduling')
-@Controller('schedulings')
+@Controller('scheduling')
 export class SchedulingController {
   constructor(private readonly schedulingService: SchedulingService) {}
 
@@ -46,7 +46,7 @@ export class SchedulingController {
   }
 
   @UseGuards(AuthGuard())
-  @Put(':schedulingId')
+  @Put('/:schedulingId')
   @ApiOperation({
     summary: 'Atualiza um horário',
   })
@@ -67,8 +67,7 @@ export class SchedulingController {
     );
   }
 
-  @UseGuards(AuthGuard())
-  @Get(':schedulingId')
+  @Get('/:schedulingId')
   @ApiOperation({
     summary: 'Busca um horário pelo id',
   })
@@ -80,40 +79,48 @@ export class SchedulingController {
     return await this.schedulingService.getSchedulingById(schedulingId);
   }
 
-  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todos os horários',
   })
   @ApiQuery({ name: 'take', required: false })
   @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'sort', required: false })
+  @ApiQuery({ name: 'order', required: false })
   @ApiQuery({ name: 'userId', required: false })
-  @ApiQuery({ name: 'schedulingId', required: false })
+  @ApiQuery({ name: 'barberId', required: false })
+  @ApiQuery({ name: 'barberShopId', required: false })
   @ApiOkResponse({ type: GetAllSchedulingResponseDto })
   async getAllUsers(
     @Query('take') take = 10,
     @Query('skip') skip = 0,
+    @Query('sort') sort = 'date',
+    @Query('order') order: 'ASC' | 'DESC' = 'ASC',
     @Query('userId') userId?: string,
-    @Query('schedulingId') schedulingId?: string,
+    @Query('barberId') barberId?: string,
+    @Query('barberShopId') barberShopId?: string,
   ) {
-    return await this.schedulingService.getAllScheduling(
+    return await this.schedulingService.getAllSchedulings(
       take,
       skip,
+      sort,
+      order,
       userId,
-      schedulingId,
+      barberId,
+      barberShopId,
     );
   }
 
   @UseGuards(AuthGuard())
-  @Delete(':schedulingId')
+  @Delete('/:schedulingId')
   @ApiOperation({
     summary: 'Exclui um horário',
   })
   @ApiOkResponse({ type: DeleteResponseDto })
   @ApiNotFoundResponse({ description: 'Horário não encontrado' })
-  async deleteScheduling(@Param('schedulingId') schedulingId: string) {
+  async deleteSchedulingById(@Param('schedulingId') schedulingId: string) {
     return {
-      message: await this.schedulingService.deleteScheduling(schedulingId),
+      message: await this.schedulingService.deleteSchedulingById(schedulingId),
     };
   }
 }

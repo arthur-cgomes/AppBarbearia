@@ -3,13 +3,14 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   MockRepository,
   repositoryMockFactory,
-} from '../../utils/mock/test.util';
+} from '../../common/mock/test.util';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { BarberShopService } from '../barber-shop.service';
 import { CreateBarberShopDto } from '../dto/create-barbershop.dto';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UpdateBarberShopDto } from '../dto/update-barbershop.dto';
 import { BarberShop } from '../entity/barber-shop.entity';
+import { mockBarberShop } from './mocks/barbershop.mock';
 
 describe('BarberShopService', () => {
   let service: BarberShopService;
@@ -32,18 +33,14 @@ describe('BarberShopService', () => {
 
   beforeEach(() => jest.clearAllMocks());
 
-  const barbershop: BarberShop = {
-    id: '12314-121454-ç687ih',
-    name: 'Teste',
-    active: true,
-  } as BarberShop;
-
   describe('createbarbershop', () => {
     const createBarbershopDto: CreateBarberShopDto = {
       name: 'Teste',
-      cnpj: '62780460000137',
+      document: '62780460000137',
       address: 'adress',
-      phone: 'phone',
+      lat: 'lat',
+      long: 'long',
+      cellphone: 'phone',
       email: 'email',
     };
 
@@ -51,10 +48,10 @@ describe('BarberShopService', () => {
       repositoryMock.findOne = jest.fn();
       repositoryMock.create = jest
         .fn()
-        .mockReturnValue({ save: () => barbershop });
+        .mockReturnValue({ save: () => mockBarberShop });
       const result = await service.createBarberShop(createBarbershopDto);
 
-      expect(result).toStrictEqual(barbershop);
+      expect(result).toStrictEqual(mockBarberShop);
       expect(repositoryMock.create).toHaveBeenCalledWith({
         ...createBarbershopDto,
       });
@@ -64,7 +61,7 @@ describe('BarberShopService', () => {
       const error = new ConflictException(
         'barbershop already exists with this CNPJ',
       );
-      repositoryMock.findOne = jest.fn().mockReturnValue(barbershop);
+      repositoryMock.findOne = jest.fn().mockReturnValue(mockBarberShop);
 
       await expect(
         service.createBarberShop(createBarbershopDto),
@@ -75,27 +72,29 @@ describe('BarberShopService', () => {
 
   describe('updateBarberShop', () => {
     const updateBarberShopDto: UpdateBarberShopDto = {
-      name: 'TestingUpdate',
-      cnpj: '62780460000137',
+      name: 'Teste',
+      document: '62780460000137',
       address: 'adress',
-      phone: 'phone',
+      lat: 'lat',
+      long: 'long',
+      cellphone: 'phone',
       email: 'email',
     };
 
     it('Should successfully update a barbershop', async () => {
-      repositoryMock.findOne = jest.fn().mockReturnValue(barbershop);
+      repositoryMock.findOne = jest.fn().mockReturnValue(mockBarberShop);
       repositoryMock.preload = jest
         .fn()
-        .mockReturnValue({ save: () => barbershop });
+        .mockReturnValue({ save: () => mockBarberShop });
 
       const result = await service.updateBarberShop(
-        barbershop.id,
+        mockBarberShop.id,
         updateBarberShopDto,
       );
 
-      expect(result).toStrictEqual(barbershop);
+      expect(result).toStrictEqual(mockBarberShop);
       expect(repositoryMock.preload).toHaveBeenCalledWith({
-        id: barbershop.id,
+        id: mockBarberShop.id,
         ...updateBarberShopDto,
       });
     });
@@ -106,7 +105,7 @@ describe('BarberShopService', () => {
       repositoryMock.findOne = jest.fn();
 
       await expect(
-        service.updateBarberShop(barbershop.id, updateBarberShopDto),
+        service.updateBarberShop(mockBarberShop.id, updateBarberShopDto),
       ).rejects.toStrictEqual(error);
       expect(repositoryMock.preload).not.toHaveBeenCalled();
     });
@@ -114,11 +113,11 @@ describe('BarberShopService', () => {
 
   describe('getBarberShopById', () => {
     it('Should successfully get a barbershop by id', async () => {
-      repositoryMock.findOne = jest.fn().mockReturnValue(barbershop);
+      repositoryMock.findOne = jest.fn().mockReturnValue(mockBarberShop);
 
-      const result = await service.getBarberShopById(barbershop.id);
+      const result = await service.getBarberShopById(mockBarberShop.id);
 
-      expect(result).toStrictEqual(barbershop);
+      expect(result).toStrictEqual(mockBarberShop);
     });
 
     it('Should throw a NotFoundException if barbershop does not exist', async () => {
@@ -127,18 +126,18 @@ describe('BarberShopService', () => {
       repositoryMock.findOne = jest.fn();
 
       await expect(
-        service.getBarberShopById(barbershop.id),
+        service.getBarberShopById(mockBarberShop.id),
       ).rejects.toStrictEqual(error);
     });
   });
 
   describe('getBarberShopByIds', () => {
     it('Should successfully get barbershop by ids', async () => {
-      repositoryMock.findBy = jest.fn().mockReturnValue([barbershop]);
+      repositoryMock.findBy = jest.fn().mockReturnValue([mockBarberShop]);
 
-      const result = await service.getBarberShopByIds([barbershop.id]);
+      const result = await service.getBarberShopByIds([mockBarberShop.id]);
 
-      expect(result).toStrictEqual([barbershop]);
+      expect(result).toStrictEqual([mockBarberShop]);
     });
   });
 
@@ -146,102 +145,212 @@ describe('BarberShopService', () => {
     it('Should successfully get all barbershops', async () => {
       const take = 1;
       const skip = 0;
+      const document = '';
+      const search = '';
+
       const conditions: FindManyOptions<BarberShop> = {
         take,
         skip,
+        order: expect.any(Object),
       };
 
       repositoryMock.findAndCount = jest
         .fn()
-        .mockReturnValue([[barbershop], 10]);
+        .mockReturnValue([[mockBarberShop], 10]);
 
-      const result = await service.getAllBarberShop(take, skip, null);
+      const result = await service.getAllBarberShops(
+        take,
+        skip,
+        '',
+        'ASC',
+        document,
+        search,
+      );
 
       expect(result).toStrictEqual({
         skip: 1,
         total: 10,
-        barbershops: [barbershop],
+        barbershops: [mockBarberShop],
       });
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
     });
 
-    it('Should successfully get all barbershop with barbershopId', async () => {
-      const barbershopId = 'barbershopId';
-      const take = 10;
-      const skip = 0;
-      const conditions: FindManyOptions<BarberShop> = {
-        take,
-        skip,
-        where: { id: barbershopId },
-      };
-
-      repositoryMock.findAndCount = jest
-        .fn()
-        .mockReturnValue([[barbershop], 10]);
-
-      const result = await service.getAllBarberShop(
-        take,
-        skip,
-        barbershopId,
-        null,
-      );
-
-      expect(result).toStrictEqual({
-        skip: null,
-        total: 10,
-        barbershops: [barbershop],
-      });
-      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
-    });
-
-    it('Should successfully get all barbershop with search', async () => {
+    it('Should successfully get all barbershops with search', async () => {
       const search = 'search';
-      const take = 10;
+      const take = 1;
       const skip = 0;
+      const document = '';
 
       const conditions: FindManyOptions<BarberShop> = {
         take,
         skip,
+        order: expect.any(Object),
         where: { name: ILike('%' + search + '%') },
       };
 
       repositoryMock.findAndCount = jest
         .fn()
-        .mockReturnValue([[barbershop], 10]);
+        .mockReturnValue([[mockBarberShop], 10]);
 
-      const result = await service.getAllBarberShop(take, skip, null, search);
+      const result = await service.getAllBarberShops(
+        take,
+        skip,
+        '',
+        'ASC',
+        document,
+        search,
+      );
+
+      const expectedSkip = 1;
+      expect(result).toStrictEqual({
+        skip: expectedSkip,
+        total: 10,
+        barbershops: [mockBarberShop],
+      });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
+
+    it('Should successfully get all barbershops filtered by document', async () => {
+      const take = 1;
+      const skip = 0;
+      const document = '123.456.789-00';
+      const search = '';
+
+      const conditions: FindManyOptions<BarberShop> = {
+        take,
+        skip,
+        order: expect.any(Object),
+        where: { document },
+      };
+
+      repositoryMock.findAndCount = jest
+        .fn()
+        .mockReturnValue([[mockBarberShop], 10]);
+
+      const result = await service.getAllBarberShops(
+        take,
+        skip,
+        '',
+        'ASC',
+        document,
+        search,
+      );
+
+      const expectedSkip = 1;
 
       expect(result).toStrictEqual({
-        skip: null,
+        skip: expectedSkip,
         total: 10,
-        barbershops: [barbershop],
+        barbershops: [mockBarberShop],
       });
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
     });
 
     it('Should successfully return an empty list of barbershops', async () => {
-      const take = 10;
-      const skip = 10;
+      const take = 1;
+      const skip = 0;
+      const document = '';
+      const search = '';
+
       const conditions: FindManyOptions<BarberShop> = {
         take,
         skip,
+        order: expect.any(Object),
       };
 
       repositoryMock.findAndCount = jest.fn().mockReturnValue([[], 0]);
 
-      const result = await service.getAllBarberShop(take, skip, null);
+      const result = await service.getAllBarberShops(
+        take,
+        skip,
+        '',
+        'ASC',
+        document,
+        search,
+      );
 
       expect(result).toStrictEqual({ skip: null, total: 0, barbershops: [] });
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
     });
+
+    it('Should return skip as null when there are no more barbershops to paginate', async () => {
+      const take = 5;
+      const skip = 0;
+      const search = 'search';
+      const document = '';
+
+      const count = 5;
+      const conditions: FindManyOptions<BarberShop> = {
+        take,
+        skip,
+        order: expect.any(Object),
+        where: { name: ILike('%' + search + '%') },
+      };
+
+      repositoryMock.findAndCount = jest
+        .fn()
+        .mockReturnValue([[mockBarberShop], count]);
+
+      const result = await service.getAllBarberShops(
+        take,
+        skip,
+        '',
+        'ASC',
+        document,
+        search,
+      );
+
+      expect(result).toStrictEqual({
+        skip: null,
+        total: count,
+        barbershops: [mockBarberShop],
+      });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
+
+    it('Should calculate skip correctly when there are more barbershops to paginate', async () => {
+      const take = 5;
+      const skip = 0;
+      const search = 'search';
+      const document = '';
+
+      const count = 15;
+      const conditions: FindManyOptions<BarberShop> = {
+        take,
+        skip,
+        order: expect.any(Object),
+        where: { name: ILike('%' + search + '%') },
+      };
+
+      repositoryMock.findAndCount = jest
+        .fn()
+        .mockReturnValue([[mockBarberShop], count]);
+
+      const result = await service.getAllBarberShops(
+        take,
+        skip,
+        '',
+        'ASC',
+        document,
+        search,
+      );
+
+      const expectedSkip = 5;
+      expect(result).toStrictEqual({
+        skip: expectedSkip,
+        total: count,
+        barbershops: [mockBarberShop],
+      });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
   });
 
-  describe('deleteBarberShop', () => {
+  describe('deleteBarberShopById', () => {
     it('Should successfully delete a barbershop', async () => {
-      repositoryMock.findOne = jest.fn().mockReturnValue(barbershop);
+      repositoryMock.findOne = jest.fn().mockReturnValue(mockBarberShop);
       repositoryMock.remove = jest.fn();
 
-      const result = await service.deleteBarberShop(barbershop.id);
+      const result = await service.deleteBarberShopById(mockBarberShop.id);
 
       expect(result).toStrictEqual('removed');
     });
@@ -252,7 +361,7 @@ describe('BarberShopService', () => {
       repositoryMock.findOne = jest.fn();
 
       await expect(
-        service.deleteBarberShop(barbershop.id),
+        service.deleteBarberShopById(mockBarberShop.id),
       ).rejects.toStrictEqual(error);
     });
   });
