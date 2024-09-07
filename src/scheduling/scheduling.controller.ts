@@ -94,7 +94,7 @@ export class SchedulingController {
   async getAllUsers(
     @Query('take') take = 10,
     @Query('skip') skip = 0,
-    @Query('sort') sort = 'name',
+    @Query('sort') sort = 'date',
     @Query('order') order: 'ASC' | 'DESC' = 'ASC',
     @Query('userId') userId?: string,
     @Query('barberId') barberId?: string,

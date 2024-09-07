@@ -130,18 +130,23 @@ describe('BarberService', () => {
     it('Should successfully get all barbers', async () => {
       const take = 1;
       const skip = 0;
+      const sort = 'name';
+      const order = 'ASC';
       const barbershopId = '';
       const search = '';
 
       const conditions: FindManyOptions<Barber> = {
         take,
         skip,
+        order: { [sort]: order },
       };
       repositoryMock.findAndCount.mockResolvedValue([[mockBarber], 10]);
 
       const result = await service.getAllBarbers(
         take,
         skip,
+        sort,
+        order,
         barbershopId,
         search,
       );
@@ -158,11 +163,14 @@ describe('BarberService', () => {
       const barbershopId = 'barbershopId';
       const take = 10;
       const skip = 0;
+      const sort = 'name';
+      const order = 'ASC';
       const search = '';
 
       const conditions: FindManyOptions<Barber> = {
         take,
         skip,
+        order: { [sort]: order },
         where: { barbershop: { id: barbershopId } },
       };
 
@@ -173,6 +181,8 @@ describe('BarberService', () => {
       const result = await service.getAllBarbers(
         take,
         skip,
+        sort,
+        order,
         barbershopId,
         search,
       );
@@ -189,11 +199,14 @@ describe('BarberService', () => {
       const search = 'search';
       const take = 10;
       const skip = 0;
+      const sort = 'name';
+      const order = 'ASC';
       const barbershopId = '';
 
       const conditions: FindManyOptions<Barber> = {
         take,
         skip,
+        order: { [sort]: order },
         where: { name: ILike('%' + search + '%') },
       };
 
@@ -204,6 +217,8 @@ describe('BarberService', () => {
       const result = await service.getAllBarbers(
         take,
         skip,
+        sort,
+        order,
         barbershopId,
         search,
       );
@@ -219,12 +234,15 @@ describe('BarberService', () => {
     it('Should successfully return an empty list of barbers', async () => {
       const take = 10;
       const skip = 10;
+      const sort = 'name';
+      const order = 'ASC';
       const barbershopId = '';
       const search = '';
 
       const conditions: FindManyOptions<Barber> = {
         take,
         skip,
+        order: { [sort]: order },
       };
 
       repositoryMock.findAndCount = jest.fn().mockReturnValue([[], 0]);
@@ -232,11 +250,83 @@ describe('BarberService', () => {
       const result = await service.getAllBarbers(
         take,
         skip,
+        sort,
+        order,
         barbershopId,
         search,
       );
 
       expect(result).toStrictEqual({ skip: null, total: 0, barbers: [] });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
+
+    it('Should increment skip when more results are available', async () => {
+      const take = 5;
+      const skip = 0;
+      const sort = 'name';
+      const order = 'ASC';
+      const barbershopId = '';
+      const search = '';
+
+      const conditions: FindManyOptions<Barber> = {
+        take,
+        skip,
+        order: { [sort]: order },
+      };
+
+      repositoryMock.findAndCount = jest
+        .fn()
+        .mockReturnValue([[mockBarber], 15]);
+
+      const result = await service.getAllBarbers(
+        take,
+        skip,
+        sort,
+        order,
+        barbershopId,
+        search,
+      );
+
+      expect(result).toStrictEqual({
+        skip: 5,
+        total: 15,
+        barbers: [mockBarber],
+      });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
+
+    it('Should set skip to null when no more results are available', async () => {
+      const take = 5;
+      const skip = 5;
+      const sort = 'name';
+      const order = 'ASC';
+      const barbershopId = '';
+      const search = '';
+
+      const conditions: FindManyOptions<Barber> = {
+        take,
+        skip,
+        order: { [sort]: order },
+      };
+
+      repositoryMock.findAndCount = jest
+        .fn()
+        .mockReturnValue([[mockBarber], 5]);
+
+      const result = await service.getAllBarbers(
+        take,
+        skip,
+        sort,
+        order,
+        barbershopId,
+        search,
+      );
+
+      expect(result).toStrictEqual({
+        skip: null,
+        total: 5,
+        barbers: [mockBarber],
+      });
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
     });
   });

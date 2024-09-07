@@ -5,7 +5,7 @@ import {
   repositoryMockFactory,
 } from '../../common/mock/test.util';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
-import { Services } from '../entity/service.entity';
+import { Service } from '../entity/service.entity';
 import { ServicesService } from '../service.service';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UpdateServiceDto } from '../dto/update-service.dto';
@@ -14,22 +14,22 @@ import { mockService } from './mocks/service.mock';
 
 describe('ServicesService', () => {
   let service: ServicesService;
-  let repositoryMock: MockRepository<Repository<Services>>;
+  let repositoryMock: MockRepository<Repository<Service>>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ServicesService,
         {
-          provide: getRepositoryToken(Services),
-          useValue: repositoryMockFactory<Services>(),
+          provide: getRepositoryToken(Service),
+          useValue: repositoryMockFactory<Service>(),
         },
       ],
     }).compile();
 
     service = module.get<ServicesService>(ServicesService);
 
-    repositoryMock = module.get(getRepositoryToken(Services));
+    repositoryMock = module.get(getRepositoryToken(Service));
   });
 
   beforeEach(() => jest.resetAllMocks());
@@ -126,16 +126,18 @@ describe('ServicesService', () => {
   });
 
   describe('getAllServices', () => {
-    it('Should successfully a list of services', async () => {
+    it('Should successfully return a list of services', async () => {
       const take = 1;
       const skip = 0;
-      const serviceId = '';
+      const sort = 'name';
+      const order = 'ASC';
       const search = '';
       const barberShopId = '';
 
-      const conditions: FindManyOptions<Services> = {
+      const conditions: FindManyOptions<Service> = {
         take,
         skip,
+        order: { [sort]: order },
         where: {},
       };
       repositoryMock.findAndCount = jest.fn().mockReturnValue([[service], 10]);
@@ -143,71 +145,10 @@ describe('ServicesService', () => {
       const result = await service.getAllServices(
         take,
         skip,
-        serviceId,
-        search,
+        sort,
+        order,
         barberShopId,
-      );
-
-      expect(result).toStrictEqual({
-        skip: 1,
-        total: 10,
-        services: [service],
-      });
-      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
-    });
-
-    it('Should successfully get all services with serviceId', async () => {
-      const serviceId = 'serviceId';
-      const take = 1;
-      const skip = null;
-      const search = '';
-      const barberShopId = '';
-
-      const conditions: FindManyOptions<Services> = {
-        take,
-        skip,
-        where: { id: serviceId },
-      };
-
-      repositoryMock.findAndCount = jest.fn().mockReturnValue([[service], 10]);
-
-      const result = await service.getAllServices(
-        take,
-        skip,
-        serviceId,
         search,
-        barberShopId,
-      );
-
-      expect(result).toStrictEqual({
-        skip: 1,
-        total: 10,
-        services: [service],
-      });
-      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
-    });
-
-    it('Should successfully get all services with serviceName', async () => {
-      const search = 'search';
-      const take = 1;
-      const skip = null;
-      const serviceId = '';
-      const barberShopId = '';
-
-      const conditions: FindManyOptions<Services> = {
-        take,
-        skip,
-        where: { name: ILike('%' + search + '%') },
-      };
-
-      repositoryMock.findAndCount = jest.fn().mockReturnValue([[service], 10]);
-
-      const result = await service.getAllServices(
-        take,
-        skip,
-        serviceId,
-        search,
-        barberShopId,
       );
 
       expect(result).toStrictEqual({
@@ -222,12 +163,14 @@ describe('ServicesService', () => {
       const barberShopId = 'barberShopId';
       const take = 1;
       const skip = null;
-      const serviceId = '';
+      const sort = 'name';
+      const order = 'ASC';
       const search = '';
 
-      const conditions: FindManyOptions<Services> = {
+      const conditions: FindManyOptions<Service> = {
         take,
         skip,
+        order: { [sort]: order },
         where: { barberShop: { id: barberShopId } },
       };
 
@@ -236,9 +179,44 @@ describe('ServicesService', () => {
       const result = await service.getAllServices(
         take,
         skip,
-        serviceId,
-        search,
+        sort,
+        order,
         barberShopId,
+        search,
+      );
+
+      expect(result).toStrictEqual({
+        skip: 1,
+        total: 10,
+        services: [service],
+      });
+      expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
+    });
+
+    it('Should successfully get all services with search term', async () => {
+      const search = 'search';
+      const take = 1;
+      const skip = null;
+      const sort = 'name';
+      const order = 'ASC';
+      const barberShopId = '';
+
+      const conditions: FindManyOptions<Service> = {
+        take,
+        skip,
+        order: { [sort]: order },
+        where: { name: ILike('%' + search + '%') },
+      };
+
+      repositoryMock.findAndCount = jest.fn().mockReturnValue([[service], 10]);
+
+      const result = await service.getAllServices(
+        take,
+        skip,
+        sort,
+        order,
+        barberShopId,
+        search,
       );
 
       expect(result).toStrictEqual({
@@ -252,13 +230,15 @@ describe('ServicesService', () => {
     it('Should successfully return an empty list of services', async () => {
       const take = 1;
       const skip = 0;
-      const serviceId = '';
+      const sort = 'name';
+      const order = 'ASC';
       const search = '';
       const barberShopId = '';
 
-      const conditions: FindManyOptions<Services> = {
+      const conditions: FindManyOptions<Service> = {
         take,
         skip,
+        order: { [sort]: order },
         where: {},
       };
 
@@ -267,9 +247,10 @@ describe('ServicesService', () => {
       const result = await service.getAllServices(
         take,
         skip,
-        serviceId,
-        search,
+        sort,
+        order,
         barberShopId,
+        search,
       );
 
       expect(result).toStrictEqual({
@@ -283,13 +264,15 @@ describe('ServicesService', () => {
     it('Should set skip to null when no more results are available', async () => {
       const take = 5;
       const skip = 5;
-      const serviceId = '';
+      const sort = 'name';
+      const order = 'ASC';
       const search = '';
       const barberShopId = '';
 
-      const conditions: FindManyOptions<Services> = {
+      const conditions: FindManyOptions<Service> = {
         take,
         skip,
+        order: { [sort]: order },
         where: {},
       };
 
@@ -298,9 +281,10 @@ describe('ServicesService', () => {
       const result = await service.getAllServices(
         take,
         skip,
-        serviceId,
-        search,
+        sort,
+        order,
         barberShopId,
+        search,
       );
 
       expect(result).toStrictEqual({
@@ -314,13 +298,15 @@ describe('ServicesService', () => {
     it('Should increment skip when more results are available', async () => {
       const take = 5;
       const skip = 0;
-      const serviceId = '';
+      const sort = 'name';
+      const order = 'ASC';
       const search = '';
       const barberShopId = '';
 
-      const conditions: FindManyOptions<Services> = {
+      const conditions: FindManyOptions<Service> = {
         take,
         skip,
+        order: { [sort]: order },
         where: {},
       };
 
@@ -329,9 +315,10 @@ describe('ServicesService', () => {
       const result = await service.getAllServices(
         take,
         skip,
-        serviceId,
-        search,
+        sort,
+        order,
         barberShopId,
+        search,
       );
 
       expect(result).toStrictEqual({
