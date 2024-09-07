@@ -1,8 +1,10 @@
+## 💈App Barbearia
+
 ## Description
 
 This project was developed with the goal of improving my skills as a back-end developer, using modern technologies and best practices. The application allows users to register, make appointments, and manage barbershops, barbers, and services efficiently.
 
-### Funcionalidades principais:
+### Main features:
 
 - User registration with secure authentication via Passport.
 - Management of barbershops, barbers and services.
