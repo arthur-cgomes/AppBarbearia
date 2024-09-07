@@ -1,43 +1,64 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty } from 'class-validator';
 import { BarberShop } from '../../barber-shop/entity/barber-shop.entity';
 import { BaseCollection } from '../../common/entity/base.entity';
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToOne } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+} from 'typeorm';
 import { Scheduling } from '../../scheduling/entity/scheduling.entity';
 
 @Entity()
 export class Barber extends BaseCollection {
-  @ApiProperty()
-  @IsNotEmpty()
-  @Column({ length: 20, default: null }) // Adicionar mascara de CPF e limitar a 11 caracteres
-  cpf: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @Column({ length: 255 })
+  @ApiProperty({
+    description: 'Nome do barbeiro',
+    type: String,
+  })
+  @Column({ type: 'varchar', default: null, nullable: true })
   name: string;
 
-  @ApiProperty()
-  @Column()
-  @IsEmail()
+  @ApiProperty({
+    description: 'CPF do barbeiro',
+    type: String,
+  })
+  @Column({ length: 11, default: null, nullable: true })
+  document: string;
+
+  @ApiProperty({
+    description: 'Email do barbeiro',
+    type: String,
+  })
+  @Column({ type: 'varchar', default: null, nullable: true })
   email: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @Column({ length: 20 })
-  phone: string;
+  @ApiProperty({
+    description: 'Número de celular do barbeiro',
+    type: String,
+  })
+  @Column({ type: 'varchar', default: null, nullable: true })
+  cellphone: string;
 
-  @ApiProperty({ type: () => BarberShop })
-  @OneToOne(() => BarberShop, (barbershop) => barbershop.barber)
-  barbershop: BarberShop;
+  @ApiProperty({
+    description: 'Relacionamento com a tabela BarberShop',
+    type: () => BarberShop,
+  })
+  @ManyToMany(() => BarberShop, (barbershop) => barbershop.barber)
+  barbershop: BarberShop[];
 
-  @ApiProperty({ type: () => Scheduling })
-  @OneToOne(() => Scheduling, (scheduling) => scheduling.barber)
-  scheduling: Scheduling;
+  @ApiProperty({
+    description: 'Relacionamento com a tabela Scheduling',
+    type: () => Scheduling,
+    isArray: true,
+  })
+  @OneToMany(() => Scheduling, (scheduling) => scheduling.barber)
+  schedulings: Scheduling[];
 
   @BeforeInsert()
   @BeforeUpdate()
   format = () => {
-    if (this.phone) this.phone = this.phone.replace(/[^\d]+/g, '');
+    if (this.cellphone) this.cellphone = this.cellphone.replace(/[^\d]+/g, '');
   };
 }

@@ -1,24 +1,60 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class UpdateBarberShopDto {
-  @ApiProperty({ type: String })
+  @ApiProperty({
+    description: 'Nome da barbearia',
+    type: String,
+  })
   @IsOptional()
+  @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'CNPJ da barbearia',
+    type: String,
+  })
   @IsOptional()
-  cnpj: string;
+  @IsString()
+  document: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Endereço da barbearia',
+    type: String,
+  })
   @IsOptional()
+  @IsString()
   address: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Latitude da barbearia',
+    type: String,
+  })
   @IsOptional()
-  phone: string;
+  @IsString()
+  lat: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Longitude da barbearia',
+    type: String,
+  })
   @IsOptional()
+  @IsString()
+  long: string;
+
+  @ApiProperty({
+    description: 'Número da barbearia',
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  cellphone: string;
+
+  @ApiProperty({
+    description: 'Email da barbearia',
+    type: String,
+  })
+  @IsOptional()
+  @IsEmail()
   email: string;
 }

@@ -8,23 +8,35 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 export abstract class BaseCollection extends BaseEntity {
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Id uuid padrão',
+    type: String,
+  })
   @PrimaryGeneratedColumn('uuid', { name: 'id' })
   id: string;
 
-  @ApiProperty({ type: Date })
+  @ApiProperty({
+    description: 'Data de criação do registro',
+    type: Date,
+  })
   @CreateDateColumn({
     type: 'timestamp',
   })
   createdAt: string;
 
-  @ApiProperty({ type: Date })
+  @ApiProperty({
+    description: 'Data de edição do registro',
+    type: Date,
+  })
   @UpdateDateColumn({
     type: 'timestamp',
-    select: false,
   })
   updatedAt: string;
 
-  @Column({ type: 'bool', name: 'active', default: true })
+  @ApiProperty({
+    description: 'Registro ativo ou não',
+    type: Boolean,
+  })
+  @Column({ type: 'bool', default: true })
   active: boolean;
 }

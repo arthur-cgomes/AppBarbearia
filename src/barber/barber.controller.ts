@@ -21,7 +21,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { DeleteResponseDto } from 'src/common/dto/delete-response.dto';
+import { DeleteResponseDto } from '../common/dto/delete-response.dto';
 import { BarberService } from './barber.service';
 import { BarberDto } from './dto/barber.dto';
 import { CreateBarberDto } from './dto/create-barber.dto';
@@ -30,14 +30,14 @@ import { UpdateBarberDto } from './dto/update-barber.dto';
 
 @ApiBearerAuth()
 @ApiTags('Barber')
-@Controller('barbers')
+@Controller('barber')
 export class BarberController {
   constructor(private readonly barberService: BarberService) {}
 
   @UseGuards(AuthGuard())
   @Post()
   @ApiOperation({
-    summary: 'Adiona um novo barbeiro',
+    summary: 'Cria um novo barbeiro',
   })
   @ApiCreatedResponse({ type: BarberDto })
   @ApiConflictResponse({
@@ -48,7 +48,7 @@ export class BarberController {
   }
 
   @UseGuards(AuthGuard())
-  @Put(':barberId')
+  @Put('/:barberId')
   @ApiOperation({
     summary: 'Atualiza um barbeiro',
   })
@@ -64,8 +64,7 @@ export class BarberController {
     return await this.barberService.updateBarber(barberId, updateBarberDto);
   }
 
-  @UseGuards(AuthGuard())
-  @Get(':barberId')
+  @Get('/:barberId')
   @ApiOperation({
     summary: 'Retorna um barbeiro pelo id',
   })
@@ -75,31 +74,43 @@ export class BarberController {
     return await this.barberService.getBarberById(barberId);
   }
 
-  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todos os barbeiros',
   })
   @ApiQuery({ name: 'take', required: false })
   @ApiQuery({ name: 'skip', required: false })
-  @ApiQuery({ name: 'barberId', required: false })
+  @ApiQuery({ name: 'sort', required: false })
+  @ApiQuery({ name: 'order', required: false })
+  @ApiQuery({ name: 'barbershopId', required: false })
+  @ApiQuery({ name: 'search', required: false })
   @ApiOkResponse({ type: GetAllBarbersResponseDto })
   async getAllBarbers(
     @Query('take') take = 10,
     @Query('skip') skip = 0,
-    @Query('barberId') barberId?: string,
+    @Query('sort') sort = 'name',
+    @Query('order') order: 'ASC' | 'DESC' = 'ASC',
+    @Query('barbershopId') barbershopId?: string,
+    @Query('search') search?: string,
   ) {
-    return await this.barberService.getAllBarbers(take, skip, barberId);
+    return await this.barberService.getAllBarbers(
+      take,
+      skip,
+      sort,
+      order,
+      barbershopId,
+      search,
+    );
   }
 
   @UseGuards(AuthGuard())
-  @Delete(':barberId')
+  @Delete('/:barberId')
   @ApiOperation({
     summary: 'Exclui um barbeiro',
   })
   @ApiOkResponse({ type: DeleteResponseDto })
   @ApiNotFoundResponse({ description: 'Barbeiro não encontrado' })
-  async deleteBarber(@Param('barberId') barberId: string) {
-    return { message: await this.barberService.deleteBarber(barberId) };
+  async deleteBarberById(@Param('barberId') barberId: string) {
+    return { message: await this.barberService.deleteBarberById(barberId) };
   }
 }

@@ -1,64 +1,103 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty } from 'class-validator';
 import { User } from '../../user/entity/user.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
-  OneToOne,
 } from 'typeorm';
 import { BaseCollection } from '../../common/entity/base.entity';
 import { Scheduling } from '../../scheduling/entity/scheduling.entity';
 import { Barber } from '../../barber/entity/barber.entity';
+import { Service } from '../../service/entity/service.entity';
 
 @Entity()
 export class BarberShop extends BaseCollection {
-  @ApiProperty()
-  @IsNotEmpty()
-  @Column({ length: 255 })
+  @ApiProperty({
+    description: 'Nome da barbearia',
+    type: String,
+  })
+  @Column({ type: 'varchar', default: null, nullable: true })
   name: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @Column({ length: 14 })
-  cnpj: string;
+  @ApiProperty({
+    description: 'CNPJ da barbearia',
+    type: String,
+  })
+  @Column({ type: 'varchar', default: null, nullable: true })
+  document: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @Column({ type: 'text', default: null })
+  @ApiProperty({
+    description: 'Endereço da barbearia',
+    type: String,
+  })
+  @Column({ type: 'varchar', default: null, nullable: true })
   address: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @Column({ length: 20, default: null })
-  phone: string;
+  @ApiProperty({
+    description: 'Latitude da barbearia',
+    type: String,
+  })
+  @Column({ type: 'varchar', default: null, nullable: true })
+  lat: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @Column({ name: 'Email', length: 255, default: null })
-  @IsEmail()
+  @ApiProperty({
+    description: 'Longitude da barbearia',
+    type: String,
+  })
+  @Column({ type: 'varchar', default: null, nullable: true })
+  long: string;
+
+  @ApiProperty({
+    description: 'Número da barbearia',
+    type: String,
+  })
+  @Column({ type: 'varchar', default: null, nullable: true })
+  cellphone: string;
+
+  @ApiProperty({
+    description: 'Email da barbearia',
+    type: String,
+  })
+  @Column({ type: 'varchar', default: null, nullable: true })
   email: string;
 
-  @ApiProperty({ type: () => User })
-  @IsNotEmpty()
+  @ApiProperty({
+    description: 'Relacionamento com a tabela User',
+    type: () => User,
+  })
   @OneToMany(() => User, (user) => user.barbershops)
   user: User;
 
-  @ApiProperty({ type: () => Scheduling })
-  @IsNotEmpty()
-  @OneToMany(() => Scheduling, (scheduling) => scheduling.barbershops)
+  @ApiProperty({
+    description: 'Relacionamento com a tabela Scheduling',
+    type: () => Scheduling,
+  })
+  @OneToMany(() => Scheduling, (scheduling) => scheduling.barbershop)
   scheduling: Scheduling;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @OneToOne(() => Barber, (barber) => barber.barbershop)
-  barber: Barber;
+  @ApiProperty({
+    description: 'Relacionamento com a tabela Barber',
+    type: () => Barber,
+  })
+  @ManyToMany(() => Barber, (barber) => barber.barbershop)
+  @JoinTable({ name: 'barbershop_barbers' })
+  barber: Barber[];
+
+  @ApiProperty({
+    description: 'Relacionamento com a tabela Services',
+    type: () => Service,
+    isArray: true,
+  })
+  @ManyToMany(() => Service, (services) => services.barberShop)
+  services: Service[];
 
   @BeforeInsert()
   @BeforeUpdate()
   format = () => {
-    if (this.phone) this.phone = this.phone.replace(/[^\d]+/g, '');
+    if (this.cellphone) this.cellphone = this.cellphone.replace(/[^\d]+/g, '');
   };
 }
